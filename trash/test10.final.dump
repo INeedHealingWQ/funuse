@@ -4,39 +4,30 @@
 
 Disassembly of section .text:
 
-00010094 <func>:
-   10094:	e52db004 	push	{fp}		; (str fp, [sp, #-4]!)
-   10098:	e28db000 	add	fp, sp, #0
-   1009c:	e24dd00c 	sub	sp, sp, #12
-   100a0:	e59f3040 	ldr	r3, [pc, #64]	; 100e8 <func+0x54>
-   100a4:	e5933000 	ldr	r3, [r3]
-   100a8:	e50b300c 	str	r3, [fp, #-12]
-   100ac:	e3a03000 	mov	r3, #0
-   100b0:	e50b3008 	str	r3, [fp, #-8]
-   100b4:	e51b300c 	ldr	r3, [fp, #-12]
-   100b8:	e3530004 	cmp	r3, #4
-   100bc:	ca000002 	bgt	100cc <func+0x38>
-   100c0:	e3a03001 	mov	r3, #1
-   100c4:	e50b3008 	str	r3, [fp, #-8]
-   100c8:	ea000001 	b	100d4 <func+0x40>
-   100cc:	e3a03002 	mov	r3, #2
-   100d0:	e50b3008 	str	r3, [fp, #-8]
-   100d4:	e3a03000 	mov	r3, #0
-   100d8:	e1a00003 	mov	r0, r3
-   100dc:	e28bd000 	add	sp, fp, #0
-   100e0:	e49db004 	pop	{fp}		; (ldr fp, [sp], #4)
-   100e4:	e12fff1e 	bx	lr
-   100e8:	000200ec 	andeq	r0, r2, ip, ror #1
+00010074 <stfunc>:
+   10074:	e52db004 	push	{fp}		; (str fp, [sp, #-4]!)
+   10078:	e28db000 	add	fp, sp, #0
+   1007c:	e24dd00c 	sub	sp, sp, #12
+   10080:	e50b0008 	str	r0, [fp, #-8]
+   10084:	e51b3008 	ldr	r3, [fp, #-8]
+   10088:	e1a00003 	mov	r0, r3
+   1008c:	e28bd000 	add	sp, fp, #0
+   10090:	e49db004 	pop	{fp}		; (ldr fp, [sp], #4)
+   10094:	e12fff1e 	bx	lr
 
-Disassembly of section .data:
-
-000200ec <a>:
-   200ec:	0000000a 	andeq	r0, r0, sl
+00010098 <func>:
+   10098:	e92d4800 	push	{fp, lr}
+   1009c:	e28db004 	add	fp, sp, #4
+   100a0:	e3a00006 	mov	r0, #6
+   100a4:	ebfffff2 	bl	10074 <stfunc>
+   100a8:	e3a03000 	mov	r3, #0
+   100ac:	e1a00003 	mov	r0, r3
+   100b0:	e8bd8800 	pop	{fp, pc}
 
 Disassembly of section .comment:
 
 00000000 <.comment>:
-   0:	3a434347 	bcc	10d0d24 <__bss_end__+0x10b0c34>
+   0:	3a434347 	bcc	10d0d24 <__bss_end__+0x10b0c70>
    4:	62552820 	subsvs	r2, r5, #32, 16	; 0x200000
    8:	75746e75 	ldrbvc	r6, [r4, #-3701]!	; 0xfffff18b
    c:	322e3920 	eorcc	r3, lr, #32, 18	; 0x80000

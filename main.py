@@ -26,7 +26,7 @@ class dataProcessObj:
         self.__textDict = {}
         self.dataDownFlag = False
         self.textDownFlag = False
-        ''' self.dataDict = {(0,'') : [0, 0, ...]} '''
+        ''' self.dataDict = {0 : ['', 0, 0, ...]} '''
         self.unused = {}
 
     def __del__(self):
@@ -45,16 +45,8 @@ class dataProcessObj:
         ''' can not del elem during traversing '''
         for e in self.__dataDict:
             for i in self.__dataDict[e][1:]:
-                if i == 0x01ff6514:
-                    print('Found: ', e, sep='\t')
-                    debugFlag = True
-                else:
-                    debugFlag = False
                 g = self.__dataDict.get(i)
                 if g != None:
-                    if debugFlag == True:
-                        print('Not Found It\'s caller: ', e, sep='\t')
-
                     if g[-1] == "TextUsedIt":
                         g[-1] = "AllUsedIt"
                     else:
@@ -128,16 +120,125 @@ class dataProcessObj:
 
 ''' class for processing .text section '''
 class textProcessObj:
-#    def __init__(self, dataFile, textFile):
-#        self.dataFile = open(dataFile, 'r')
-#        self.textFile = open(textFile, 'r')
-#        self.dataFileCut = '/tmp/dataFileCut' + str(self.__name__)
-#        self.textFileCut = '/tmp/textFileCut' + str(self.__name__)
-#
-#    def __name__(self):
-#        return 'textProcessObj'
-#
-#if __name__ == '__main__':
+    def __init__(self, dataFile, textFile):
+        self.__dataFile = open(dataFile, 'r')
+        self.__textFile = open(textFile, 'r')
+        self.__textFileCut = '/tmp/textFileCut_textProcessObj'
+        self.__dataDict = {}
+        ''' self.__dataDict = {0 : ['', 0, 0, ...]} '''
+        self.__textDict = {}
+        ''' self.__textDict = {0 : ['', [0, ''], [0, ''], ...]} '''
+        self.dataDownFlag = False
+        self.textDownFlag = False
+        self.unused = {}
+
+    def __del__(self):
+        self.__dataFile.close()
+        self.__textFile.close()
+
+    def roughCount(self):
+        assert self.dataDownFlag is True \
+            and self.textDownFlag is True
+#        map = [c - c for c in range(0, len(self.__dataDict))]
+        for e in self.__dataDict:
+            for i in self.__dataDict[e][1:]:
+                g = self.__textDict.get(i)
+                if g != None:
+                    g.append('DataUsedIt')
+        for e in self.__textDict:
+            for i in self.__textDict[e][1:]:
+                g = self.__dataDict.get(i[0])
+                if g != None:
+                    if g[-1] == 'DataUsedIt':
+                        g[-1] = 'AllUsedIt'
+                    else:
+                        g[-1] = 'TextUsedIt'
+        for e in self.__textDict:
+            elem = self.__textDict[e][-1]
+            if elem == "AllUsedIt" \
+                or elem == "TextUsedIt" \
+                    or elem == "DataUsedIt":
+                continue
+            else:
+                self.unused[e] = self.__textDict[e]
+
+        fcut = open(self.__textFileCut, 'w')
+        for e in self.unused:
+            fcut.write('%s: %s\n' %(str(hex(e)), str(self.unused[e])))
+        fcut.close()
+
+
+    def deepCount(self):
+        assert self.dataDownFlag is True \
+               and self.textDownFlag is True
+
+    def start(self):
+        self.__stripData()
+        self.__stripText()
+
+    def __name__(self):
+        return 'textProcessObj'
+
+    def __stripData(self):
+        elemId = ()
+        elem = []
+        lines = self.__dataFile.readlines()
+        dict = self.__dataDict
+
+        for l in lines:
+            if l.isspace():
+                if elem != []:
+                    dict[elemId] = elem
+                elem = []
+                continue
+            elif not re.findall(r'[0-9a-zA-Z_]+', l):
+                continue
+            firstWord = re.findall(r'^[0-9a-zA-Z]+', l)
+            secondWord = re.findall(r'<[_a-zA-Z0-9.]+>', l)
+            if firstWord != [] and secondWord != []:
+                elemId = int(firstWord[0], base=16)
+                elem.append(secondWord[0].strip('<>'))
+                continue
+            content = l.split()
+            elem.append(int(content[1], base=16))
+
+        self.dataDownFlag = True
+
+    def __stripText(self):
+        elemId = ()
+        elem = []
+        lines = self.__textFile.readlines()
+        dict = self.__textDict
+
+        for l in lines:
+            if l.isspace():
+                if elem != []:
+                    dict[elemId] = elem
+                elem = []
+                continue
+            elif not re.findall(r'[0-9a-zA-Z]+', l):
+                continue
+            firstWord = re.findall(r'^[0-9a-zA-Z]+', l)
+            secondWord = re.findall(r'<[_a-zA-Z0-9.]+>', l)
+            if firstWord != [] and secondWord != []:
+                elemId = int(firstWord[0], base=16)
+                elem.append(secondWord[0].strip('<>'))
+                continue
+            content = l.split()
+            if content[2] == 'bl' and \
+                [] == re.findall(r'_[a-zA-Z_]+\+', content[4]):
+                callFuncAddr = content[3]
+                callFuncName = content[4].strip('<>')
+                elem.append((int(callFuncAddr, base=16), callFuncName))
+
+        self.textDownFlag = True
+
+    def dumpData(self):
+        print(self.__dataDict)
+        print(self.__textDict)
+
+
+if __name__ == '__main__':
 #    finalArgs = [gObjdumpToolPath, gObjdumpArgs,
 #                 sys.argv[1]]
 #    try:
@@ -182,6 +283,10 @@ class textProcessObj:
 #    oTmpFileData.close()
 #    oTmpFileText.close()
 
-    dataProcessObj_v = dataProcessObj(gOutFileData, gOutFileText)
-    dataProcessObj_v.start()
-    dataProcessObj_v.roughCount()
+#    dataProcessObj_v = dataProcessObj(gOutFileData, gOutFileText)
+#    dataProcessObj_v.start()
+#    dataProcessObj_v.roughCount()
+
+    textProcessObj_v = textProcessObj(gOutFileData, gOutFileText)
+    textProcessObj_v.start()
+    textProcessObj_v.roughCount()
