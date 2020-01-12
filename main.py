@@ -5,288 +5,275 @@ import subprocess
 import re
 
 ''' some common tmp file for storing tmp data '''
-gObjdumpToolPath = '/opt/toolchain/iProcLDK_3.4.6/usr/bin/arm-linux-objdump'
-gObjdumpArgs = '-D'
-gSectionData = ".data:"
-gSectionText = ".text:"
-gOutFileData = '/tmp/outfile_data'
-gOutFileText = '/tmp/outfile_text'
-gObjdumpSectionPrompt = "Disassembly of section "
+g_object_dump_tool_path = '/opt/toolchain/iProcLDK_3.4.6/usr/bin/arm-linux-objdump'
+g_object_dump_args = '-D'
+g_section_data = ".data:"
+g_section_text = ".text:"
+g_out_file_data = '/tmp/outfile_data'
+g_out_file_text = '/tmp/outfile_text'
+g_object_dump_section_prompt = "Disassembly of section "
+
 
 ''' class for processing .data section '''
-class dataProcessObj:
-    def __init__(self, dataFile, textFile):
+
+
+class DataProcessObj:
+    def __init__(self, data_file, text_file):
         self.__DATA = 0
         self.__TEXT = 1
-        self.__dataFile = open(dataFile, 'r')
-        self.__textFile = open(textFile, 'r')
-        self.__dataFileCut = '/tmp/dataFileCut' + str(self.__name__)
-        self.__textFileCut = '/tmp/textFileCut' + str(self.__name__)
-        self.__dataDict = {}
-        self.__textDict = {}
-        self.dataDownFlag = False
-        self.textDownFlag = False
+        self.__data_file = open(data_file, 'r')
+        self.__text_file = open(text_file, 'r')
+        self.__data_dict = {}
+        self.__text_dict = {}
+        self.data_down_flag = False
+        self.text_down_flag = False
         ''' self.dataDict = {0 : ['', 0, 0, ...]} '''
         self.unused = {}
 
     def __del__(self):
-        self.__dataFile.close()
-        self.__textFile.close()
+        self.__data_file.close()
+        self.__text_file.close()
 
-    def roughCount(self):
-        assert self.dataDownFlag is True \
-            and self.textDownFlag is True
-#        map = [c - c for c in range(0, len(self.__dataDict))]
-        for e in self.__textDict:
-            for i in self.__textDict[e][1:]:
-                g = self.__dataDict.get(i)
-                if g != None:
-                    self.__dataDict[i].append("TextUsedIt")
+    def cough_count(self):
+        assert self.data_down_flag is True \
+            and self.text_down_flag is True
+#        map = [c - c for c in range(0, len(self.__data_dict))]
+        for e in self.__text_dict:
+            for i in self.__text_dict[e][1:]:
+                g = self.__data_dict.get(i)
+                if g is not None:
+                    self.__data_dict[i].append("TextUsedIt")
         ''' can not del elem during traversing '''
-        for e in self.__dataDict:
-            for i in self.__dataDict[e][1:]:
-                g = self.__dataDict.get(i)
-                if g != None:
+        for e in self.__data_dict:
+            for i in self.__data_dict[e][1:]:
+                g = self.__data_dict.get(i)
+                if g is not None:
                     if g[-1] == "TextUsedIt":
                         g[-1] = "AllUsedIt"
                     else:
                         g.append("DataUsedIt")
-        for e in self.__dataDict:
-            elem = self.__dataDict[e][-1]
+        for e in self.__data_dict:
+            elem = self.__data_dict[e][-1]
             if elem == "AllUsedIt" \
                 or elem == "TextUsedIt" \
                     or elem == "DataUsedIt":
                 continue
             else:
-                self.unused[e] = self.__dataDict[e]
+                self.unused[e] = self.__data_dict[e]
 
         print(self.unused)
 
-
-    def deepCount(self):
-        assert self.dataDownFlag is True \
-               and self.textDownFlag is True
+    def deep_count(self):
+        assert self.data_down_flag is True \
+               and self.text_down_flag is True
 
     def start(self):
-        self.__stripData()
-        self.__stripText()
+        self.__strip_data()
+        self.__strip_text()
 
-    def __name__(self):
-        return 'dataProcessObj'
-
-    def __stripData(self):
+    def __strip_data(self):
         self.__strip(self.__DATA)
 
-    def __stripText(self):
+    def __strip_text(self):
         self.__strip(self.__TEXT)
 
-    def __strip(self, type):
-        elemId = ()
+    def __strip(self, strip_type):
+        elem_id = ()
         elem = []
+        assert strip_type == self.__DATA or strip_type == self.__TEXT
         if type == self.__DATA:
-            lines = self.__dataFile.readlines()
-            dict = self.__dataDict
-        elif type == self.__TEXT:
-            lines = self.__textFile.readlines()
-            dict = self.__textDict
+            lines = self.__data_file.readlines()
+            dict_tmp = self.__data_dict
+        else:
+            lines = self.__text_file.readlines()
+            dict_tmp = self.__text_dict
 
-        for l in lines:
-            if l.isspace():
-                if elem != []:
-                    dict[elemId] = elem
-                elemAddr = 0
+        for single_line in lines:
+            if single_line.isspace():
+                if elem:
+                    dict_tmp[elem_id] = elem
                 elem = []
                 continue
-            elif not re.findall(r'[0-9a-zA-Z_]+', l):
+            elif not re.findall(r'[0-9a-zA-Z_]+', single_line):
                 continue
-            firstWord = re.findall(r'^[0-9a-zA-Z]+', l)
-            secondWord = re.findall(r'<[_a-zA-Z0-9.]+>', l)
-            if firstWord != [] and secondWord != []:
-                elemId = int(firstWord[0], base=16)
-                elem.append(secondWord[0].strip('<>'))
+            first_world = re.findall(r'^[0-9a-zA-Z]+', single_line)
+            second_world = re.findall(r'<[_a-zA-Z0-9.]+>', single_line)
+            if first_world != [] and second_world != []:
+                elem_id = int(first_world[0], base=16)
+                elem.append(second_world[0].strip('<>'))
                 continue
-            content = l.split()
+            content = single_line.split()
             elem.append(int(content[1], base=16))
 
         if type == self.__DATA:
-            self.dataDownFlag = True
-        elif type == self.__TEXT:
-            self.textDownFlag = True
+            self.data_down_flag = True
+        else:
+            self.text_down_flag = True
 
-    def dumpData(self):
-        print(self.__dataDict)
-        print(self.__textDict)
+    def dump_data(self):
+        print(self.__data_dict)
+        print(self.__text_dict)
 
 
 ''' class for processing .text section '''
-class textProcessObj:
-    def __init__(self, dataFile, textFile):
-        self.__dataFile = open(dataFile, 'r')
-        self.__textFile = open(textFile, 'r')
-        self.__textFileCut = '/tmp/textFileCut_textProcessObj'
-        self.__dataDict = {}
-        ''' self.__dataDict = {0 : ['', 0, 0, ...]} '''
-        self.__textDict = {}
-        ''' self.__textDict = {0 : ['', [0, ''], [0, ''], ...]} '''
-        self.dataDownFlag = False
-        self.textDownFlag = False
+
+
+class TextProcessObj:
+    def __init__(self, data_file, text_file):
+        self.__data_file = open(data_file, 'r')
+        self.__text_file = open(text_file, 'r')
+        self.__text_file_cut = '/tmp/text_fileCut_TextProcessObj'
+        self.__data_dict = {}
+        ''' self.__data_dict = {0 : ['', 0, 0, ...]} '''
+        self.__text_dict = {}
+        ''' self.__text_dict = {0 : ['', [0, ''], [0, ''], ...]} '''
+        self.data_down_flag = False
+        self.text_down_flag = False
         self.unused = {}
 
     def __del__(self):
-        self.__dataFile.close()
-        self.__textFile.close()
+        self.__data_file.close()
+        self.__text_file.close()
 
-    def roughCount(self):
-        assert self.dataDownFlag is True \
-            and self.textDownFlag is True
-#        map = [c - c for c in range(0, len(self.__dataDict))]
-        for e in self.__dataDict:
-            for i in self.__dataDict[e][1:]:
-                g = self.__textDict.get(i)
-                if g != None:
+    def cough_count(self):
+        assert self.data_down_flag is True \
+            and self.text_down_flag is True
+#        map = [c - c for c in range(0, len(self.__data_dict))]
+        for e in self.__data_dict:
+            for i in self.__data_dict[e][1:]:
+                g = self.__text_dict.get(i)
+                if g is not None:
                     g.append('DataUsedIt')
-        for e in self.__textDict:
-            for i in self.__textDict[e][1:]:
-                g = self.__dataDict.get(i[0])
-                if g != None:
+        for e in self.__text_dict:
+            for i in self.__text_dict[e][1:]:
+                g = self.__data_dict.get(i[0])
+                if g is not None:
                     if g[-1] == 'DataUsedIt':
                         g[-1] = 'AllUsedIt'
                     else:
                         g[-1] = 'TextUsedIt'
-        for e in self.__textDict:
-            elem = self.__textDict[e][-1]
+        for e in self.__text_dict:
+            elem = self.__text_dict[e][-1]
             if elem == "AllUsedIt" \
                 or elem == "TextUsedIt" \
                     or elem == "DataUsedIt":
                 continue
             else:
-                self.unused[e] = self.__textDict[e]
+                self.unused[e] = self.__text_dict[e]
 
-        fcut = open(self.__textFileCut, 'w')
+        file_cut = open(self.__text_file_cut, 'w')
         for e in self.unused:
-            fcut.write('%s: %s\n' %(str(hex(e)), str(self.unused[e])))
-        fcut.close()
+            file_cut.write('%s: %s\n' % (str(hex(e)), str(self.unused[e])))
+        file_cut.close()
 
-
-    def deepCount(self):
-        assert self.dataDownFlag is True \
-               and self.textDownFlag is True
+    def deep_count(self):
+        assert self.data_down_flag is True \
+               and self.text_down_flag is True
 
     def start(self):
-        self.__stripData()
-        self.__stripText()
+        self.__strip_data()
+        self.__strip_text()
 
-    def __name__(self):
-        return 'textProcessObj'
-
-    def __stripData(self):
-        elemId = ()
+    def __strip_data(self):
+        elem_id = ()
         elem = []
-        lines = self.__dataFile.readlines()
-        dict = self.__dataDict
+        lines = self.__data_file.readlines()
+        dict_tmp = self.__data_dict
 
-        for l in lines:
-            if l.isspace():
-                if elem != []:
-                    dict[elemId] = elem
+        for single_line in lines:
+            if single_line.isspace():
+                if elem:
+                    dict_tmp[elem_id] = elem
                 elem = []
                 continue
-            elif not re.findall(r'[0-9a-zA-Z_]+', l):
+            elif not re.findall(r'[0-9a-zA-Z_]+', single_line):
                 continue
-            firstWord = re.findall(r'^[0-9a-zA-Z]+', l)
-            secondWord = re.findall(r'<[_a-zA-Z0-9.]+>', l)
-            if firstWord != [] and secondWord != []:
-                elemId = int(firstWord[0], base=16)
-                elem.append(secondWord[0].strip('<>'))
+            first_world = re.findall(r'^[0-9a-zA-Z]+', single_line)
+            second_world = re.findall(r'<[_a-zA-Z0-9.]+>', single_line)
+            if first_world != [] and second_world != []:
+                elem_id = int(first_world[0], base=16)
+                elem.append(second_world[0].strip('<>'))
                 continue
-            content = l.split()
+            content = single_line.split()
             elem.append(int(content[1], base=16))
 
-        self.dataDownFlag = True
+        self.data_down_flag = True
 
-    def __stripText(self):
-        elemId = ()
+    def __strip_text(self):
+        elem_id = ()
         elem = []
-        lines = self.__textFile.readlines()
-        dict = self.__textDict
+        lines = self.__text_file.readlines()
+        dict_tmp = self.__text_dict
 
-        for l in lines:
-            if l.isspace():
-                if elem != []:
-                    dict[elemId] = elem
+        for single_line in lines:
+            if single_line.isspace():
+                if elem:
+                    dict_tmp[elem_id] = elem
                 elem = []
                 continue
-            elif not re.findall(r'[0-9a-zA-Z]+', l):
+            elif not re.findall(r'[0-9a-zA-Z]+', single_line):
                 continue
-            firstWord = re.findall(r'^[0-9a-zA-Z]+', l)
-            secondWord = re.findall(r'<[_a-zA-Z0-9.]+>', l)
-            if firstWord != [] and secondWord != []:
-                elemId = int(firstWord[0], base=16)
-                elem.append(secondWord[0].strip('<>'))
+            first_world = re.findall(r'^[0-9a-zA-Z]+', single_line)
+            second_world = re.findall(r'<[_a-zA-Z0-9.]+>', single_line)
+            if first_world != [] and second_world != []:
+                elem_id = int(first_world[0], base=16)
+                elem.append(second_world[0].strip('<>'))
                 continue
-            content = l.split()
+            content = single_line.split()
             if content[2] == 'bl' and \
-                [] == re.findall(r'_[a-zA-Z_]+\+', content[4]):
-                callFuncAddr = content[3]
-                callFuncName = content[4].strip('<>')
-                elem.append((int(callFuncAddr, base=16), callFuncName))
+                    [] == re.findall(r'_[a-zA-Z_]+\+', content[4]):
+                call_func_address = content[3]
+                call_func_name = content[4].strip('<>')
+                elem.append((int(call_func_address, base=16), call_func_name))
 
-        self.textDownFlag = True
+        self.text_down_flag = True
 
-    def dumpData(self):
-        print(self.__dataDict)
-        print(self.__textDict)
+    def dump_data(self):
+        print(self.__data_dict)
+        print(self.__text_dict)
 
 
 if __name__ == '__main__':
-#    finalArgs = [gObjdumpToolPath, gObjdumpArgs,
-#                 sys.argv[1]]
-#    try:
-#        oTmpFileData = open(gOutFileData, 'w')
-#    except OSError:
-#        print('Open file %s for writing failed.' % (gOutFileData))
-#
-#    try:
-#        oTmpFileText = open(gOutFileText, 'w')
-#    except OSError:
-#        print('Open file %s for writing failed' % (gOutFileText))
-#
-#    popen = subprocess.Popen(finalArgs, stdout=subprocess.PIPE)
-#    dataFlag, dataGot = False, False
-#    textFlag, textGot = False, False
-#    lineTokenData = gObjdumpSectionPrompt + gSectionData
-#    lineTokenText = gObjdumpSectionPrompt + gSectionText
-#    while popen.poll() is None:
-#        line = popen.stdout.readline().decode('gbk')
-#        if line.find(lineTokenData) != -1:
-#            dataFlag, dataGot = True, True
-#            textFlag = False
-#            continue
-#        elif line.find(lineTokenText) != -1:
-#            textFlag, textGot = True, True
-#            dataFlag = False
-#            continue
-#        elif line.find(gObjdumpSectionPrompt) != -1:
-#            textFlag = dataFlag = False
-#            continue
-#
-#        if dataFlag is True:
-#            oTmpFileData.writelines(line)
-#        elif textFlag is True:
-#            oTmpFileText.writelines(line)
-#
-#        if dataGot is True and dataFlag is False \
-#            and textGot is True and textFlag is False:
-#            popen.kill()
-#            break
-#
-#    oTmpFileData.close()
-#    oTmpFileText.close()
+    final_args = [g_object_dump_tool_path, g_object_dump_args, sys.argv[1]]
+    out_tmp_file_data = open(g_out_file_data, 'w')
+    out_tmp_file_text = open(g_out_file_text, 'w')
 
-#    dataProcessObj_v = dataProcessObj(gOutFileData, gOutFileText)
-#    dataProcessObj_v.start()
-#    dataProcessObj_v.roughCount()
+    sub_process = subprocess.Popen(final_args, stdout=subprocess.PIPE)
+    data_flag, dataGot = False, False
+    text_flag, textGot = False, False
+    line_token_data = g_object_dump_section_prompt + g_section_data
+    line_token_text = g_object_dump_section_prompt + g_section_text
+    while sub_process.poll() is None:
+        line = sub_process.stdout.readline().decode('gbk')
+        if line.find(line_token_data) != -1:
+            data_flag, dataGot = True, True
+            text_flag = False
+            continue
+        elif line.find(line_token_text) != -1:
+            text_flag, textGot = True, True
+            data_flag = False
+            continue
+        elif line.find(g_object_dump_section_prompt) != -1:
+            text_flag = data_flag = False
+            continue
 
-    textProcessObj_v = textProcessObj(gOutFileData, gOutFileText)
-    textProcessObj_v.start()
-    textProcessObj_v.roughCount()
+        if data_flag is True:
+            out_tmp_file_data.writelines(line)
+        elif text_flag is True:
+            out_tmp_file_text.writelines(line)
+
+        if dataGot is True and data_flag is False \
+                and textGot is True and text_flag is False:
+            sub_process.kill()
+            break
+
+    out_tmp_file_data.close()
+    out_tmp_file_text.close()
+
+    DataProcessObj_v = DataProcessObj(g_out_file_data, g_out_file_text)
+    DataProcessObj_v.start()
+    DataProcessObj_v.cough_count()
+
+    TextProcessObj_v = TextProcessObj(g_out_file_data, g_out_file_text)
+    TextProcessObj_v.start()
+    TextProcessObj_v.cough_count()
