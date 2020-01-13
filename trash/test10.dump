@@ -4,25 +4,18 @@
 
 Disassembly of section .text:
 
-00000000 <stfunc>:
+00000000 <func>:
    0:	e52db004 	push	{fp}		; (str fp, [sp, #-4]!)
    4:	e28db000 	add	fp, sp, #0
-   8:	e24dd00c 	sub	sp, sp, #12
-   c:	e50b0008 	str	r0, [fp, #-8]
-  10:	e51b3008 	ldr	r3, [fp, #-8]
-  14:	e1a00003 	mov	r0, r3
-  18:	e28bd000 	add	sp, fp, #0
-  1c:	e49db004 	pop	{fp}		; (ldr fp, [sp], #4)
-  20:	e12fff1e 	bx	lr
-
-00000024 <func>:
-  24:	e92d4800 	push	{fp, lr}
-  28:	e28db004 	add	fp, sp, #4
-  2c:	e3a00006 	mov	r0, #6
-  30:	ebfffff2 	bl	0 <stfunc>
-  34:	e3a03000 	mov	r3, #0
-  38:	e1a00003 	mov	r0, r3
-  3c:	e8bd8800 	pop	{fp, pc}
+   8:	e24dd014 	sub	sp, sp, #20
+   c:	e50b0010 	str	r0, [fp, #-16]
+  10:	e51b3010 	ldr	r3, [fp, #-16]
+  14:	e50b3008 	str	r3, [fp, #-8]
+  18:	e3a03000 	mov	r3, #0
+  1c:	e1a00003 	mov	r0, r3
+  20:	e28bd000 	add	sp, fp, #0
+  24:	e49db004 	pop	{fp}		; (ldr fp, [sp], #4)
+  28:	e12fff1e 	bx	lr
 
 Disassembly of section .comment:
 

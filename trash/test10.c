@@ -1,10 +1,12 @@
-static int stfunc(int v)
+typedef struct test_struct
 {
-    return v;
-}
+    int a;
+    int b;
+} test_struct;
 
-int func()
+int func(void *arg)
 {
-    stfunc(6);
+    test_struct *st;
+    st = (test_struct *)arg;
     return 0;
 }

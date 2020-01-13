@@ -4,30 +4,23 @@
 
 Disassembly of section .text:
 
-00010074 <stfunc>:
+00010074 <func>:
    10074:	e52db004 	push	{fp}		; (str fp, [sp, #-4]!)
    10078:	e28db000 	add	fp, sp, #0
-   1007c:	e24dd00c 	sub	sp, sp, #12
-   10080:	e50b0008 	str	r0, [fp, #-8]
-   10084:	e51b3008 	ldr	r3, [fp, #-8]
-   10088:	e1a00003 	mov	r0, r3
-   1008c:	e28bd000 	add	sp, fp, #0
-   10090:	e49db004 	pop	{fp}		; (ldr fp, [sp], #4)
-   10094:	e12fff1e 	bx	lr
-
-00010098 <func>:
-   10098:	e92d4800 	push	{fp, lr}
-   1009c:	e28db004 	add	fp, sp, #4
-   100a0:	e3a00006 	mov	r0, #6
-   100a4:	ebfffff2 	bl	10074 <stfunc>
-   100a8:	e3a03000 	mov	r3, #0
-   100ac:	e1a00003 	mov	r0, r3
-   100b0:	e8bd8800 	pop	{fp, pc}
+   1007c:	e24dd014 	sub	sp, sp, #20
+   10080:	e50b0010 	str	r0, [fp, #-16]
+   10084:	e51b3010 	ldr	r3, [fp, #-16]
+   10088:	e50b3008 	str	r3, [fp, #-8]
+   1008c:	e3a03000 	mov	r3, #0
+   10090:	e1a00003 	mov	r0, r3
+   10094:	e28bd000 	add	sp, fp, #0
+   10098:	e49db004 	pop	{fp}		; (ldr fp, [sp], #4)
+   1009c:	e12fff1e 	bx	lr
 
 Disassembly of section .comment:
 
 00000000 <.comment>:
-   0:	3a434347 	bcc	10d0d24 <__bss_end__+0x10b0c70>
+   0:	3a434347 	bcc	10d0d24 <__bss_end__+0x10b0c84>
    4:	62552820 	subsvs	r2, r5, #32, 16	; 0x200000
    8:	75746e75 	ldrbvc	r6, [r4, #-3701]!	; 0xfffff18b
    c:	322e3920 	eorcc	r3, lr, #32, 18	; 0x80000
