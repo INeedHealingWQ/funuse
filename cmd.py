@@ -2,7 +2,8 @@ import sys
 import getopt
 from gvars import *
 
-class CmdParse:
+
+class CmdParseObj:
     def __init__(self):
         self.help_message = r'''
         Usage: funuse <option(s)> <path>
@@ -12,8 +13,8 @@ class CmdParse:
         -d, --directory=<path>   Count definitions under the directory.
             
         The following switches are optional:
-        -a, --all       Print full information, this is the default argument.
-        -s, --simple    Brief output, only the top-level directories
+        -a, --all       Print full information.
+        -s, --simple    Brief output, only the top-level directories, this is the default argument.
         -v, --variable  Count the global variables which are not used.
         -f, --function  Count the function definition which are not used.
         -j, --jump      Use common ctags format for easy jumping

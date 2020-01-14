@@ -20,7 +20,7 @@ g_ctags_all_args = ['--languages=c', '--c-kinds=+vf-dceglmnpstu', '-f -', '-R']
 g_ctags_variable_file_tmp = '/tmp/tagfile_variable'
 g_ctags_function_file_tmp = '/tmp/tagfile_function'
 
-# global variables which need initialization
-g_dump_tool = None
-g_executable = None
-g_directory = None
+# output file
+g_variable_out_file = 'unused_functions'
+g_function_out_file = 'unused_variables'
+

@@ -3,8 +3,12 @@ import subprocess
 
 
 # Prepare some temporary files for coming processing
-class FilePrepare:
-    def __init__(self):
+class FilePrepareObj:
+    def __init__(self, objdump_tool=None, ctags_tool='ctags', executable=None, directory=None):
+        self.dump_tool = objdump_tool
+        self.ctags_tool = ctags_tool
+        self.executable = executable
+        self.directory = directory
         self.DATA = 1
         self.TEXT = 2
         self.ALLSECTION = 3
@@ -29,47 +33,53 @@ class FilePrepare:
 
     def init_tool_args(self, tool_type, section_type):
         if tool_type == self.OBJDUMP:
-            assert g_dump_tool is not None and g_executable is not None \
-                   and g_directory is not None, self.assert_msg_global_args
             if section_type == self.DATA:
                 self.objdump_data_section_final_args = \
-                    [g_dump_tool, *g_objdump_data_section_args, g_executable]
+                    [self.dump_tool, *g_objdump_data_section_args, self.executable]
             elif section_type == self.TEXT:
                 self.objdump_text_section_final_args = \
-                    [g_dump_tool, *g_objdump_text_section_args, g_executable]
+                    [self.dump_tool, *g_objdump_text_section_args, self.executable]
             elif section_type == self.ALLSECTION:
                 self.objdump_data_section_final_args = \
-                    [g_dump_tool, *g_objdump_data_section_args, g_executable]
+                    [self.dump_tool, *g_objdump_data_section_args, self.executable]
                 self.objdump_text_section_final_args = \
-                    [g_dump_tool, *g_objdump_text_section_args, g_executable]
+                    [self.dump_tool, *g_objdump_text_section_args, self.executable]
             else:
                 assert False, self.assert_msg_unrecognized_type
         elif tool_type == self.CTAGS:
             if section_type == self.DATA:
-                self.ctags_variable_final_args = g_ctags_variable_args
+                self.ctags_variable_final_args = \
+                    [self.ctags_tool, *g_ctags_variable_args, self.directory]
             elif section_type == self.TEXT:
-                self.ctags_function_final_args = g_ctags_function_args
+                self.ctags_function_final_args = \
+                    [self.ctags_tool, *g_ctags_function_args, self.directory]
             elif section_type == self.ALLSECTION:
-                self.ctags_variable_final_args = g_ctags_variable_args
-                self.ctags_function_final_args = g_ctags_function_args
+                self.ctags_variable_final_args = \
+                    [self.ctags_tool, *g_ctags_variable_args, self.directory]
+                self.ctags_function_final_args = \
+                    [self.ctags_tool, *g_ctags_function_args, self.directory]
             else:
                 assert False, self.assert_msg_unrecognized_type
         elif tool_type == self.ALLTOOL:
             if section_type == self.DATA:
                 self.objdump_data_section_final_args = \
-                    [g_dump_tool, *g_objdump_data_section_args, g_executable]
-                self.ctags_variable_final_args = g_ctags_variable_args
+                    [self.dump_tool, *g_objdump_data_section_args, self.executable]
+                self.ctags_variable_final_args = \
+                    [self.ctags_tool, *g_ctags_variable_args, self.executable]
             elif section_type == self.TEXT:
                 self.objdump_text_section_final_args = \
-                    [g_dump_tool, *g_objdump_text_section_args, g_executable]
-                self.ctags_function_final_args = g_ctags_function_args
+                    [self.dump_tool, *g_objdump_text_section_args, self.executable]
+                self.ctags_function_final_args = \
+                    [self.ctags_tool, *g_ctags_function_args, self.directory]
             elif section_type == self.ALLSECTION:
                 self.objdump_data_section_final_args = \
-                    [g_dump_tool, *g_objdump_data_section_args, g_executable]
-                self.ctags_variable_final_args = g_ctags_variable_args
+                    [self.dump_tool, *g_objdump_data_section_args, self.executable]
                 self.objdump_text_section_final_args = \
-                    [g_dump_tool, *g_objdump_text_section_args, g_executable]
-                self.ctags_function_final_args = g_ctags_function_args
+                    [self.dump_tool, *g_objdump_text_section_args, self.executable]
+                self.ctags_variable_final_args = \
+                    [self.ctags_tool, *g_ctags_variable_args, self.directory]
+                self.ctags_function_final_args = \
+                    [self.ctags_tool, *g_ctags_function_args, self.directory]
         else:
             assert False, self.assert_msg_unrecognized_tool
 
@@ -92,14 +102,19 @@ class FilePrepare:
         with open(var_file_tmp, 'w') as f:
             while var_sub_process.poll() is None:
                 single_line = var_sub_process.stdout.readline().decode('ascii')
-                tag_list = single_line.split()
-                up_dir = str(g_directory).split('/')
-                if up_dir[-1] == '':
-                    up_dir = up_dir[0:-1]
-                dir_list = tag_list[1].split('/')
-                dir_list = dir_list[dir_list.index(up_dir[-1]):]
-
-                pass
+                if single_line.isspace() is True:
+                    continue
+                print(single_line)
+                single_line_list = single_line.split()
+                model_dir_list = single_line_list[1].partition(self.directory)[2]
+                model_dir_list = model_dir_list.split('/')
+                if model_dir_list[0] == '':
+                    model_dir = model_dir_list[1]
+                else:
+                    model_dir = model_dir_list[0]
+                var_name = single_line_list[0]
+                write_line = var_name + ' ' + model_dir
+                f.writelines(write_line)
 
     # /tmp/outfile_data, /tmp/outfile_text
     def split_sections_to_file(self, section_type):
