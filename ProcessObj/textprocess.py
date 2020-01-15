@@ -4,8 +4,8 @@ import re
 # class for processing .text section
 class TextProcessObj:
     def __init__(self, data_section_file, text_section_file):
-        self.__data_section_file = open(data_section_file, 'r')
-        self.__text_section_file = open(text_section_file, 'r')
+        self.__data_section_file = data_section_file
+        self.__text_section_file = text_section_file
         # self.__text_file_cut = '/tmp/textFileCut_textProcessObj'
         # self.__dict_out = '/tmp/dict_out'
         self.__data_dict = {}
@@ -15,10 +15,6 @@ class TextProcessObj:
         self.data_down_flag = False
         self.text_down_flag = False
         self.unused = {}
-
-    def __del__(self):
-        self.__data_section_file.close()
-        self.__text_section_file.close()
 
     def rough_count(self):
         assert self.data_down_flag is True \
@@ -70,7 +66,9 @@ class TextProcessObj:
     def __strip_data(self):
         elem_id = ()
         elem = []
-        lines = self.__data_section_file.readlines()
+        f = open(self.__data_section_file, 'r')
+        lines = f.readlines()
+        f.close()
         local_dict = self.__data_dict
 
         for single_line in lines:
@@ -95,7 +93,9 @@ class TextProcessObj:
     def __strip_text(self):
         elem_id = ()
         elem = []
-        lines = self.__text_section_file.readlines()
+        f = open(self.__text_section_file, 'r')
+        lines = f.readlines()
+        f.close()
         local_dict = self.__text_dict
         pre_elem_movw = None
 

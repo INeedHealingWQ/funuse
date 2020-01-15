@@ -6,8 +6,8 @@ g_objdump_text_section_file_tmp = '/tmp/outfile_text'
 g_objdump_section_prompt_string = 'Disassembly of section'
 
 # command line options
-g_short_options = "vft:x:d:asj"
-g_long_options = ["variable", "function", "jump", "dumptool=", "executable=", "directory="]
+g_short_options = "vft:x:d:asjh"
+g_long_options = ["variable", "function", "jump", "help", "dumptool=", "executable=", "directory="]
 g_necessary_opts_s = ['-t', '-x', '-d']
 g_necessary_opts_l = ['--dumptool', '--executable', '--directory']
 g_necessary_opts = [['-t', '--dumptool'], ['-x', '--executable'], ['-d', '--directory']]
@@ -21,6 +21,5 @@ g_ctags_variable_file_tmp = '/tmp/tagfile_variable'
 g_ctags_function_file_tmp = '/tmp/tagfile_function'
 
 # output file
-g_variable_out_file = 'unused_functions'
-g_function_out_file = 'unused_variables'
-
+g_variable_out_file = 'unused_variables'
+g_function_out_file = 'unused_functions'

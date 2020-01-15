@@ -1,10 +1,14 @@
 from ProcessObj.dataprocess import *
 from ProcessObj.textprocess import *
 from gvars import *
+from parameterobj import *
+import copy
 
 
 class FilterObj:
-    def __init__(self):
+    def __init__(self, parameter_obj):
+        assert type(parameter_obj) is ParameterObj, 'parameter error'
+        self.__parameter_obj = copy.deepcopy(parameter_obj)
         self.__variable_out_file = g_variable_out_file
         self.__function_out_file = g_function_out_file
         self.__ctags_variable_file_tmp = g_ctags_variable_file_tmp
@@ -24,58 +28,122 @@ class FilterObj:
         # {'dir_level1' : 'name'}
         self.__variable_dir_dict = {}
         self.__function_dir_dict = {}
-        self.VAR = (1, 0)
-        self.FUN = (0, 1)
-        self.ALL = (1, 1)
-        self.assert_msg_unrecognized_kind = 'unrecognized kind'
+        # {'file_path' : 'name'}
+        self.__variable_file_dict = {}
+        self.__function_file_dict = {}
+        self.assert_msg_variable_dict_need_init = 'variable dictionary need initialization first'
+        self.assert_msg_function_dict_need_init = 'function dictionary need initialization first'
 
     # filter functions to the directory it belongs to
-    def final_trip(self, kind):
-        assert kind == self.VAR or kind == self.FUN or \
-               kind == self.ALL, self.assert_msg_unrecognized_kind
-        if kind[0] == 1:
+    def __final_trip(self):
+        if self.__parameter_obj.count_variable is True:
             for e in self.__variable_tag_dict:
                 if self.__variable_tag_dict[e][-1] == 'xxxhit':
-                    model_name = self.__variable_tag_dict[e][0]
-                    g = self.__variable_dir_dict.get(model_name)
-                    if g is None:
-                        self.__variable_dir_dict[model_name] = [e]
-                    else:
-                        # get the first function in the directory
-                        self.__variable_dir_dict[model_name].append(e)
-        if kind[1] == 1:
+                    if self.__parameter_obj.output_simple is True:
+                        model_name = self.__variable_tag_dict[e][0]
+                        g = self.__variable_dir_dict.get(model_name)
+                        if g is None:
+                            # got the first function in the directory
+                            self.__variable_dir_dict[model_name] = [e]
+                        else:
+                            self.__variable_dir_dict[model_name].append(e)
+                    elif self.__parameter_obj.output_all is True:
+                        # get the file path which the variable belongs to in the module
+                        model_name = self.__variable_tag_dict[e][0]
+                        file_name = self.__variable_tag_dict[e][1]
+                        m = self.__variable_file_dict.get(model_name)
+                        if m is None:
+                            # Got the first file in the module
+                            self.__variable_file_dict[model_name] = {file_name: [e]}
+                        else:
+                            g = self.__variable_file_dict[model_name].get(file_name)
+                            if g is None:
+                                # Got the first function in the file
+                                self.__variable_file_dict[model_name][file_name] = [e]
+                            else:
+                                # Otherwise append to the variables list of the file
+                                self.__variable_file_dict[model_name][file_name].append(e)
+        if self.__parameter_obj.count_function is True:
             for e in self.__function_tag_dict:
                 if self.__function_tag_dict[e][-1] == 'xxxhit':
-                    model_name = self.__function_tag_dict[e][0]
-                    g = self.__function_dir_dict.get(model_name)
-                    if g is None:
-                        self.__function_dir_dict[model_name] = [e]
-                    else:
-                        # get the first function in the directory
-                        self.__function_dir_dict[model_name].append(e)
+                    if self.__parameter_obj.output_simple is True:
+                        model_name = self.__function_tag_dict[e][0]
+                        g = self.__function_dir_dict.get(model_name)
+                        if g is None:
+                            self.__function_dir_dict[model_name] = [e]
+                        else:
+                            # get the first function in the directory
+                            self.__function_dir_dict[model_name].append(e)
+                    if self.__parameter_obj.output_all is True:
+                        model_name = self.__function_tag_dict[e][0]
+                        file_name = self.__function_tag_dict[e][1]
+                        m = self.__function_file_dict.get(model_name)
+                        if m is None:
+                            self.__function_file_dict[model_name] = {file_name: [e]}
+                        else:
+                            g = self.__function_file_dict[model_name].get(file_name)
+                            if g is None:
+                                self.__function_file_dict[model_name][file_name] = [e]
+                            else:
+                                self.__function_file_dict[model_name][file_name].append(e)
 
-    def init_tag_dict(self, kind):
-        assert kind == self.VAR or kind == self.FUN or \
-            kind == self.ALL, self.assert_msg_unrecognized_kind
-        if kind[0] == 1:
+    # This must be called before start_filter
+    def init_tag_dict(self):
+        if self.__parameter_obj.count_variable is True:
             with open(self.__ctags_variable_file_tmp, 'r') as f:
                 ctags_lines = f.readlines()
             for single_line in ctags_lines:
                 ctags_list = single_line.split()
                 model_name = ctags_list[1]
-                self.__variable_tag_dict[ctags_list[0]] = model_name
-        if kind[1] == 1:
+                file_path = ctags_list[2]
+                self.__variable_tag_dict[ctags_list[0]] = [model_name, file_path]
+        if self.__parameter_obj.count_function is True:
             with open(self.__ctags_function_file_tmp, 'r') as f:
                 ctags_lines = f.readlines()
             for single_line in ctags_lines:
                 ctags_list = single_line.split()
                 model_name = ctags_list[1]
-                self.__function_tag_dict[ctags_list[0]] = model_name
+                file_path = ctags_list[2]
+                self.__function_tag_dict[ctags_list[0]] = [model_name, file_path]
 
-    def start_filter(self, kind):
-        assert kind == self.VAR or kind == self.FUN or \
-               kind == self.ALL, self.assert_msg_unrecognized_kind
-        if kind[0] == 1:
+    def __to_file(self):
+        if self.__parameter_obj.count_variable is True:
+            with open(self.__variable_out_file, 'w') as f:
+                if self.__parameter_obj.output_all is True:
+                    for m in self.__variable_file_dict:
+                        f.write('%s:\n' % m)
+                        for p in self.__variable_file_dict[m]:
+                            f.write('\t%s:\n' % p)
+                            for i in self.__variable_file_dict[m][p]:
+                                f.write('\t\t%s\n' % i)
+                        f.write('\n\n')
+                else:
+                    for e in self.__variable_dir_dict:
+                        f.write('%s:\n' % e)
+                        for i in self.__variable_dir_dict[e]:
+                            f.write('\t%s\n' % i)
+                        f.write('\n\n')
+        if self.__parameter_obj.count_function is True:
+            with open(self.__function_out_file, 'w') as f:
+                if self.__parameter_obj.output_all is True:
+                    for m in self.__function_file_dict:
+                        f.write('%s:\n' % m)
+                        for p in self.__function_file_dict[m]:
+                            f.write('\t%s:\n' % p)
+                            for i in self.__function_file_dict[m][p]:
+                                f.write('\t\t%s\n' % i)
+                        f.write('\n\n')
+                else:
+                    for e in self.__function_dir_dict:
+                        f.write('%s:\n' % e)
+                        for i in self.__function_dir_dict[e]:
+                            f.write('\t%s\n' % i)
+                        f.write('\n\n')
+
+    # This must be called after init_tag_list
+    def start_filter(self):
+        if self.__parameter_obj.count_variable is True:
+            assert self.__variable_tag_dict, self.assert_msg_variable_dict_need_init
             self.__data_process_obj.start_strip()
             self.__data_process_obj.rough_count()
             unused = self.__data_process_obj.unused
@@ -84,14 +152,8 @@ class FilterObj:
                 if g is not None:
                     # mark the function which hit in the directories
                     self.__variable_tag_dict[unused[e][0]].append('xxxhit')
-            self.final_trip()
-            with open(self.__variable_out_file, 'w') as f:
-                for e in self.__variable_dir_dict:
-                    f.write('%s:\n' % e)
-                    for i in self.__variable_dir_dict[e]:
-                        f.write('\t%s\n' % i)
-                    f.write('\n\n')
-        if kind[1] == 1:
+        if self.__parameter_obj.count_function is True:
+            assert self.__function_tag_dict, self.assert_msg_function_dict_need_init
             self.__text_process_obj.start_strip()
             self.__text_process_obj.rough_count()
             unused = self.__text_process_obj.unused
@@ -100,10 +162,5 @@ class FilterObj:
                 if g is not None:
                     # mark the function which hit in the directories
                     self.__function_tag_dict[unused[e][0]].append('xxxhit')
-            self.final_trip()
-            with open(self.__function_out_file, 'w') as f:
-                for e in self.__function_dir_dict:
-                    f.write('%s:\n' % e)
-                    for i in self.__function_dir_dict[e]:
-                        f.write('\t%s\n' % i)
-                    f.write('\n\n')
+        self.__final_trip()
+        self.__to_file()
