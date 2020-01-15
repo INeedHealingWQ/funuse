@@ -1,19 +1,25 @@
 import re
-
+import parameterobj
+import gvars
+import copy
 
 # class for processing .text section
 class TextProcessObj:
-    def __init__(self, data_section_file, text_section_file):
-        self.__data_section_file = data_section_file
-        self.__text_section_file = text_section_file
-        # self.__text_file_cut = '/tmp/textFileCut_textProcessObj'
-        # self.__dict_out = '/tmp/dict_out'
+    def __init__(self, parameter_object):
+        assert type(parameter_object) is parameterobj.ParameterObj
+        self.__parameter_obj = parameter_object
+        self.__data_section_file = gvars.g_objdump_data_section_file_tmp
+        self.__text_section_file = gvars.g_objdump_text_section_file_tmp
         self.__data_dict = {}
         # self.__dataDict = {0 : ['', 0, 0, ...]}
         self.__text_dict = {}
         # self.__textDict = {0 : ['', [0, ''], [0, ''], ...]}
         self.data_down_flag = False
         self.text_down_flag = False
+        self.__data_used_it_mark = '1'
+        self.__text_used_it_mark = '0'
+        self.__all_used_it_mark = '2'
+
         self.unused = {}
 
     def rough_count(self):
@@ -23,38 +29,25 @@ class TextProcessObj:
             for i in self.__data_dict[e][1:]:
                 g = self.__text_dict.get(i)
                 if g is not None:
-                    if g[-1] == '***TextUsedIt':
-                        g[-1] = '***AllUsedIt'
-                    elif g[-1] != '***DataUsedIt' and g[-1] != '***AllUsedIt':
-                        g.append('***DataUsedIt')
+                    if g[-1] == self.__text_used_it_mark:
+                        g[-1] = self.__all_used_it_mark
+                    elif g[-1] != self.__data_used_it_mark and g[-1] != self.__all_used_it_mark:
+                        g.append(self.__data_used_it_mark)
         for e in self.__text_dict:
             for i in self.__text_dict[e][1:]:
                 g = self.__text_dict.get(i[0])
                 if g is not None:
-                    if g[-1] == '***DataUsedIt':
-                        g[-1] = '***AllUsedIt'
-                    elif g[-1] != '***TextUsedIt' and g[-1] != '***AllUsedIt':
-                        g.append('***TextUsedIt')
+                    if g[-1] == self.__data_used_it_mark:
+                        g[-1] = self.__all_used_it_mark
+                    elif g[-1] != self.__text_used_it_mark and g[-1] != self.__all_used_it_mark:
+                        g.append(self.__text_used_it_mark)
         for e in self.__text_dict:
             elem = self.__text_dict[e][-1]
-            if elem == "***AllUsedIt" \
-                or elem == "***TextUsedIt" \
-                    or elem == "***DataUsedIt":
+            if elem in [self.__all_used_it_mark,
+                        self.__data_used_it_mark, self.__text_used_it_mark]:
                 continue
             else:
                 self.unused[e] = self.__text_dict[e]
-        # fcut = open(self.__text_file_cut, 'w')
-        # for e in self.unused:
-        #     fcut.write('%s: %s\n' % (str(hex(e)), str(self.unused[e])))
-        # fcut.close()
-        # dict_out = open(self.__dict_out, 'w')
-        # for d in self.__text_dict:
-        #     dict_out.write('%x-%s:\n' % (d, self.__text_dict[d][0]))
-        #     for i in self.__text_dict[d][1:-1]:
-        #         dict_out.write('\t%x-%s\n' % (i[0], i[1]))
-        #     dict_out.write('%s\n' % self.__text_dict[d][-1])
-        #     dict_out.write('\n')
-        # dict_out.close()
 
     def deep_count(self):
         assert self.data_down_flag is True and self.text_down_flag is True

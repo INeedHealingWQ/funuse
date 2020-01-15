@@ -15,13 +15,8 @@ class FilterObj:
         self.__ctags_function_file_tmp = g_ctags_function_file_tmp
         self.__objdump_data_section_file_tmp = g_objdump_data_section_file_tmp
         self.__objdump_text_section_file_tmp = g_objdump_text_section_file_tmp
-        self.__data_process_obj = DataProcessObj(
-            data_section_file=self.__objdump_data_section_file_tmp,
-            text_section_file=self.__objdump_text_section_file_tmp
-        )
-        self.__text_process_obj = TextProcessObj(
-            data_section_file=self.__objdump_data_section_file_tmp,
-            text_section_file=self.__objdump_text_section_file_tmp)
+        self.__data_process_obj = DataProcessObj(self.__parameter_obj)
+        self.__text_process_obj = TextProcessObj(self.__parameter_obj)
         # {'name' : [dir_level1, 'dir_level2', ...]}
         self.__variable_tag_dict = {}
         self.__function_tag_dict = {}
