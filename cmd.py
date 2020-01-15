@@ -47,7 +47,7 @@ class CmdParseObj:
                 self.__parameter_obj.count_function = True
             elif o in ['-j', '--jump']:
                 self.__parameter_obj.output_jump = True
-                self.__parameter_obj.output_all =  False
+                self.__parameter_obj.output_all = False
                 self.__parameter_obj.output_simple = False
             elif o in ['-h', '--help']:
                 self.usage()
