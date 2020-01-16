@@ -1,26 +1,12 @@
 import re
-import parameterobj
-import gvars
-import copy
+import ProcessObj.processobj as pro
+
 
 # class for processing .text section
-class TextProcessObj:
+class TextProcessObj(pro.ProcessObj):
     def __init__(self, parameter_object):
-        assert type(parameter_object) is parameterobj.ParameterObj
-        self.__parameter_obj = parameter_object
-        self.__data_section_file = gvars.g_objdump_data_section_file_tmp
-        self.__text_section_file = gvars.g_objdump_text_section_file_tmp
-        self.__data_dict = {}
-        # self.__dataDict = {0 : ['', 0, 0, ...]}
-        self.__text_dict = {}
-        # self.__textDict = {0 : ['', [0, ''], [0, ''], ...]}
-        self.data_down_flag = False
-        self.text_down_flag = False
-        self.__data_used_it_mark = '1'
-        self.__text_used_it_mark = '0'
-        self.__all_used_it_mark = '2'
-
-        self.unused = {}
+        super().__init__(parameter_object)
+        self.__unrecognized_mark = '3'
 
     def rough_count(self):
         assert self.data_down_flag is True \
@@ -119,8 +105,7 @@ class TextProcessObj:
                     if pre_elem_movw is not None:
                         cur_elem_movt = int(content[4][1:], base=10) << 16
                         address = pre_elem_movw + cur_elem_movt
-                        name = '***UnRegName'
-                        elem.append([address, name])
+                        elem.append([address, self.__unrecognized_mark])
                     pre_elem_movw = None
             else:
                 pre_elem_movw = None

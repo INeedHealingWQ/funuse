@@ -1,22 +1,22 @@
-from ProcessObj.dataprocess import *
-from ProcessObj.textprocess import *
-from gvars import *
-from parameterobj import *
+import ProcessObj.dataprocess as data
+import ProcessObj.textprocess as text
+import gvars
+import parameterobj as para
 import copy
 
 
 class FilterObj:
     def __init__(self, parameter_obj):
-        assert type(parameter_obj) is ParameterObj, 'parameter error'
+        assert type(parameter_obj) is para.ParameterObj, 'parameter error'
         self.__parameter_obj = copy.deepcopy(parameter_obj)
-        self.__variable_out_file = g_variable_out_file
-        self.__function_out_file = g_function_out_file
-        self.__ctags_variable_file_tmp = g_ctags_variable_file_tmp
-        self.__ctags_function_file_tmp = g_ctags_function_file_tmp
-        self.__objdump_data_section_file_tmp = g_objdump_data_section_file_tmp
-        self.__objdump_text_section_file_tmp = g_objdump_text_section_file_tmp
-        self.__data_process_obj = DataProcessObj(self.__parameter_obj)
-        self.__text_process_obj = TextProcessObj(self.__parameter_obj)
+        self.__variable_out_file = gvars.g_variable_out_file
+        self.__function_out_file = gvars.g_function_out_file
+        self.__ctags_variable_file_tmp = gvars.g_ctags_variable_file_tmp
+        self.__ctags_function_file_tmp = gvars.g_ctags_function_file_tmp
+        self.__objdump_data_section_file_tmp = gvars.g_objdump_data_section_file_tmp
+        self.__objdump_text_section_file_tmp = gvars.g_objdump_text_section_file_tmp
+        self.__data_process_obj = data.DataProcessObj(self.__parameter_obj)
+        self.__text_process_obj = text.TextProcessObj(self.__parameter_obj)
         # {'name' : [dir_level1, 'dir_level2', ...]}
         self.__variable_tag_dict = {}
         self.__function_tag_dict = {}

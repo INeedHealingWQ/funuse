@@ -1,27 +1,11 @@
 import re
-import parameterobj
-import gvars
-import copy
+import ProcessObj.processobj as pro
 
 
 # class for processing .data section
-class DataProcessObj:
+class DataProcessObj(pro.ProcessObj):
     def __init__(self, parameter_obj):
-        assert type(parameter_obj) is parameterobj.ParameterObj
-        self.__parameter_obj = copy.deepcopy(parameter_obj)
-        self.__data_section_file = gvars.g_objdump_data_section_file_tmp
-        self.__text_section_file = gvars.g_objdump_text_section_file_tmp
-        self.__data_dict = {}
-        # self.__data_dict = {0 : ['', 0, 0, ...]}
-        self.__text_dict = {}
-        # self.__textDict = {0 : ['', [0, ''], [0, ''], ...]}
-        self.data_down_flag = False
-        self.text_down_flag = False
-        self.__data_used_it_mark = '1'
-        self.__text_used_it_mark = '0'
-        self.__all_used_it_mark = '2'
-
-        self.unused = {}
+        super().__init__(parameter_obj)
 
     def rough_count(self):
         for e in self.__text_dict:
@@ -47,8 +31,7 @@ class DataProcessObj:
                 self.unused[e] = self.__data_dict[e]
 
     def deep_count(self):
-        assert self.data_down_flag is True \
-               and self.text_down_flag is True
+        assert [self.data_down_flag, self.text_down_flag] == [True, True]
 
     @staticmethod
     def __start_strip(strip_file, strip_dict):

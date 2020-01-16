@@ -15,11 +15,14 @@ class ProcessObj:
         # self.__textDict = {0 : ['', [0, ''], [0, ''], ...]}
         self.data_down_flag = False
         self.text_down_flag = False
-        self.__data_used_it_mark = '1'
-        self.__text_used_it_mark = '0'
+        self.__data_used_it_mark = '0'
+        self.__text_used_it_mark = '1'
         self.__all_used_it_mark = '2'
 
         self.unused = {}
 
     def rough_count(self):
+        pass
+
+    def deep_count(self):
         pass
