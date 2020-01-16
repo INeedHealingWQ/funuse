@@ -1,5 +1,5 @@
 import re
-import ProcessObj.processobj as pro
+import Process.process as pro
 
 
 # class for processing .data section
@@ -57,7 +57,7 @@ class DataProcessObj(pro.ProcessObj):
             content = single_line.split()
             elem.append(int(content[1], base=16))
 
-    def start_strip(self):
+    def run(self):
         self.__start_strip(self.data_section_file, self.data_dict)
         self.data_down_flag = True
         self.__start_strip(self.text_section_file, self.text_dict)

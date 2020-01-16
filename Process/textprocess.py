@@ -1,5 +1,5 @@
 import re
-import ProcessObj.processobj as pro
+import Process.process as pro
 
 
 # class for processing .text section
@@ -38,7 +38,7 @@ class TextProcessObj(pro.ProcessObj):
     def deep_count(self):
         assert self.data_down_flag is True and self.text_down_flag is True
 
-    def start_strip(self):
+    def run(self):
         self.__strip_data()
         self.__strip_text()
 

@@ -1,21 +1,22 @@
 # Prepare
+    python version need >= 3.5
+    Exuberant Ctags >= 5.9
     sudo apt-get install -y python3.x ctags
 
-# Funuse
-a simple functions dump tool for code optimization.
+**You should pull down gcc optimization level to 0 before use funuse**
 
 # Simply use:
     funuse.py -x ./ISS.exe -d ../future
 
-This will dump both module name and file path in the module.
-Then the file 'unused_functions' or 'unused_variables' would arised in your work directory.
-Note that '../future' is the project path which you want to count.
-Ex:
-    funuse.py -x ./ISS.exe -d ../future/vlangarp
-Will only dump the unused variables and functions in vlangarp module
-But i do not advise this because it spent the same time as ../future
+    This will dump both module name and file path in the module.
+    Then the file 'unused_functions' or 'unused_variables' would arised in your work directory.
+    Note that '../future' is the project path which you want to count.
+    Ex:
+        funuse.py -x ./ISS.exe -d ../future/vlangarp
+    Will only dump the unused variables and functions in vlangarp module
+    But i do not advise this because it spent the same time as ../future
 
-**NOTE**: Do not use funuse multi-times at the same time because of the shared file.
+    **NOTE**: Do not use funuse multi-times at the same time because of the shared file.
 
 # Only dump unused functions:
     funuse.py -x ./ISS.exe -f -d ../future

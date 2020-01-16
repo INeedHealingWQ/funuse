@@ -16,8 +16,8 @@ class CmdParseObj:
         -d, --directory=<path>   Count definitions under the directory.
             
         The following switches are optional:
-        -a, --all       Print full information.
-        -s, --simple    Brief output, only the top-level directories, this is the default argument.
+        -m, --module    Count only a single module, then the -d option should followed by module path.
+        -s, --simple    Brief output, only the top-level directories.
         -v, --variable  Count the global variables which are not used.
         -f, --function  Count the function definition which are not used.
         -j, --jump      Use common ctags format for easy jumping
@@ -33,22 +33,16 @@ class CmdParseObj:
                 self.__parameter_obj.executable = a
             elif o in ['-d', ['--directory']]:
                 self.__parameter_obj.directory = a
-            elif o in ['-a', ['--all']]:
-                self.__parameter_obj.output_all = True
-                self.__parameter_obj.output_simple = False
-                self.__parameter_obj.output_jump = False
             elif o in ['-s', ['--simple']]:
                 self.__parameter_obj.output_simple = True
-                self.__parameter_obj.output_all = False
-                self.__parameter_obj.output_jump = False
             elif o in ['-v', '--variable']:
                 self.__parameter_obj.count_variable = True
+                self.__parameter_obj.count_function = False
             elif o in ['-f', '--function']:
                 self.__parameter_obj.count_function = True
-            elif o in ['-j', '--jump']:
-                self.__parameter_obj.output_jump = True
-                self.__parameter_obj.output_all = False
-                self.__parameter_obj.output_simple = False
+                self.__parameter_obj.count_variable = False
+            elif o in ['-m', '--module']:
+                self.__parameter_obj.count_module = True
             elif o in ['-h', '--help']:
                 self.usage()
                 sys.exit(0)
