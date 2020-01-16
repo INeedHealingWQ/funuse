@@ -11,29 +11,29 @@ class TextProcessObj(pro.ProcessObj):
     def rough_count(self):
         assert self.data_down_flag is True \
                and self.text_down_flag is True
-        for e in self.__data_dict:
-            for i in self.__data_dict[e][1:]:
-                g = self.__text_dict.get(i)
+        for e in self.data_dict:
+            for i in self.data_dict[e][1:]:
+                g = self.text_dict.get(i)
                 if g is not None:
-                    if g[-1] == self.__text_used_it_mark:
-                        g[-1] = self.__all_used_it_mark
-                    elif g[-1] != self.__data_used_it_mark and g[-1] != self.__all_used_it_mark:
-                        g.append(self.__data_used_it_mark)
-        for e in self.__text_dict:
-            for i in self.__text_dict[e][1:]:
-                g = self.__text_dict.get(i[0])
+                    if g[-1] == self.text_used_it_mark:
+                        g[-1] = self.all_used_it_mark
+                    elif g[-1] != self.data_used_it_mark and g[-1] != self.all_used_it_mark:
+                        g.append(self.data_used_it_mark)
+        for e in self.text_dict:
+            for i in self.text_dict[e][1:]:
+                g = self.text_dict.get(i[0])
                 if g is not None:
-                    if g[-1] == self.__data_used_it_mark:
-                        g[-1] = self.__all_used_it_mark
-                    elif g[-1] != self.__text_used_it_mark and g[-1] != self.__all_used_it_mark:
-                        g.append(self.__text_used_it_mark)
-        for e in self.__text_dict:
-            elem = self.__text_dict[e][-1]
-            if elem in [self.__all_used_it_mark,
-                        self.__data_used_it_mark, self.__text_used_it_mark]:
+                    if g[-1] == self.data_used_it_mark:
+                        g[-1] = self.all_used_it_mark
+                    elif g[-1] != self.text_used_it_mark and g[-1] != self.all_used_it_mark:
+                        g.append(self.text_used_it_mark)
+        for e in self.text_dict:
+            elem = self.text_dict[e][-1]
+            if elem in [self.all_used_it_mark,
+                        self.data_used_it_mark, self.text_used_it_mark]:
                 continue
             else:
-                self.unused[e] = self.__text_dict[e]
+                self.unused[e] = self.text_dict[e]
 
     def deep_count(self):
         assert self.data_down_flag is True and self.text_down_flag is True
@@ -45,10 +45,10 @@ class TextProcessObj(pro.ProcessObj):
     def __strip_data(self):
         elem_id = ()
         elem = []
-        f = open(self.__data_section_file, 'r')
+        f = open(self.data_section_file, 'r')
         lines = f.readlines()
         f.close()
-        local_dict = self.__data_dict
+        local_dict = self.data_dict
 
         for single_line in lines:
             if single_line.isspace():
@@ -72,10 +72,10 @@ class TextProcessObj(pro.ProcessObj):
     def __strip_text(self):
         elem_id = ()
         elem = []
-        f = open(self.__text_section_file, 'r')
+        f = open(self.text_section_file, 'r')
         lines = f.readlines()
         f.close()
-        local_dict = self.__text_dict
+        local_dict = self.text_dict
         pre_elem_movw = None
 
         for single_line in lines:

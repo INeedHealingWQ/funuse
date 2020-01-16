@@ -8,27 +8,27 @@ class DataProcessObj(pro.ProcessObj):
         super().__init__(parameter_obj)
 
     def rough_count(self):
-        for e in self.__text_dict:
-            for i in self.__text_dict[e][1:]:
-                g = self.__data_dict.get(i)
+        for e in self.text_dict:
+            for i in self.text_dict[e][1:]:
+                g = self.data_dict.get(i)
                 if g is not None:
-                    self.__data_dict[i].append(self.__text_used_it_mark)
+                    self.data_dict[i].append(self.text_used_it_mark)
         # can not del elem during traversing, so we mark it
-        for e in self.__data_dict:
-            for i in self.__data_dict[e][1:]:
-                g = self.__data_dict.get(i)
+        for e in self.data_dict:
+            for i in self.data_dict[e][1:]:
+                g = self.data_dict.get(i)
                 if g is not None:
-                    if g[-1] == self.__text_used_it_mark:
-                        g[-1] = self.__all_used_it_mark
+                    if g[-1] == self.text_used_it_mark:
+                        g[-1] = self.all_used_it_mark
                     else:
-                        g.append(self.__data_used_it_mark)
-        for e in self.__data_dict:
-            elem = self.__data_dict[e][-1]
-            if elem in [self.__all_used_it_mark,
-                        self.__data_used_it_mark, self.__text_used_it_mark]:
+                        g.append(self.data_used_it_mark)
+        for e in self.data_dict:
+            elem = self.data_dict[e][-1]
+            if elem in [self.all_used_it_mark,
+                        self.data_used_it_mark, self.text_used_it_mark]:
                 continue
             else:
-                self.unused[e] = self.__data_dict[e]
+                self.unused[e] = self.data_dict[e]
 
     def deep_count(self):
         assert [self.data_down_flag, self.text_down_flag] == [True, True]
@@ -58,7 +58,7 @@ class DataProcessObj(pro.ProcessObj):
             elem.append(int(content[1], base=16))
 
     def start_strip(self):
-        self.__start_strip(self.__data_section_file, self.__data_dict)
+        self.__start_strip(self.data_section_file, self.data_dict)
         self.data_down_flag = True
-        self.__start_strip(self.__text_section_file, self.__text_dict)
+        self.__start_strip(self.text_section_file, self.text_dict)
         self.text_down_flag = True
