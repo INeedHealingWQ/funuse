@@ -15,7 +15,9 @@ class SectionFilePrepareObj(fileprepare.FilePrepareObj):
                 single_line = sub_process.stdout.readline().decode('ascii')
                 if single_line is '' and sub_process.poll() is not None:
                     break
-                if single_line.find(gvars.g_objdump_section_prompt_string) != -1:
+                prompt_string = single_line.find(gvars.g_objdump_section_prompt_string)
+                exe_string = single_line.find(self.executable.name)
+                if [prompt_string, exe_string] != [-1, -1]:
                     continue
                 if self.parameter_obj.quick_mode is True:
                     section_lines.append(single_line)

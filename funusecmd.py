@@ -33,20 +33,22 @@ class CmdParseObj:
             if o in ['-t', '--dumptool']:
                 self.__parameter_obj.objdump_tool = a
             elif o in ['-x', ['-executable']]:
-                exe = Path(a)
-                if exe.is_file() is False:
+                exe_str = os.path.expanduser(a)
+                exe = Path(exe_str)
+                if exe.is_file() is False or exe.suffix != '.exe':
                     print('%s should be an ELF-executable')
                     self.usage()
                     sys.exit()
                 self.__parameter_obj.executable = exe
             elif o in ['-d', ['--directory']]:
-                p = Path(a)
-                if p.is_dir() is False:
+                path_str = os.path.expanduser(a)
+                path = Path(path_str)
+                if path.is_dir() is False:
                     print('%s is not a directory.' % a)
                     self.usage()
                     sys.exit(0)
                 # Transfer to absolute directory for further processing.
-                self.__parameter_obj.directory = p
+                self.__parameter_obj.directory = path
             elif o in ['-s', ['--simple']]:
                 self.__parameter_obj.output_simple = True
             elif o in ['-v', '--variable']:
