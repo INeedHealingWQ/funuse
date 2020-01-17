@@ -12,6 +12,7 @@ class TagFilePrepareObj(fileprepare.FilePrepareObj):
         self.tag_mark_letter = None
 
     def _prepare(self, file, sub_process):
+        tag_lines = []
         with open(file, 'w') as f:
             while True:
                 single_line = sub_process.stdout.readline().decode('ascii')
@@ -41,7 +42,11 @@ class TagFilePrepareObj(fileprepare.FilePrepareObj):
                     else:
                         module_name = relative_to_dir_tuple[0]
                 write_line = name + ' ' + module_name + ' ' + file_path + '\n'
-                f.writelines(write_line)
+                if self.parameter_obj.quick_mode is True:
+                    tag_lines.append(write_line)
+                else:
+                    f.writelines(write_line)
+        return tag_lines
 
 
 class VarTagFilePrepareObj(TagFilePrepareObj):

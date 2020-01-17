@@ -19,6 +19,8 @@ class ProcessObj:
         self.text_used_it_mark = '1'
         self.all_used_it_mark = '2'
 
+        self.data_mem_lines = []
+        self.text_mem_lines = []
         self.unused = {}
 
     def rough_count(self):
@@ -26,3 +28,8 @@ class ProcessObj:
 
     def deep_count(self):
         pass
+
+    # support quick mode
+    def set_mem_lines(self, data_lines, text_lines):
+        self.data_mem_lines, self.text_mem_lines = data_lines, text_lines
+

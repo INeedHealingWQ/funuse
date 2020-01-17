@@ -11,3 +11,6 @@ class VariableFilter(filter.FilterObj):
         self.ctags_tmp_file = gvars.g_ctags_variable_file_tmp
         self.process_obj = self.data_process_obj
         self.tag_file_prepare_obj = tag.VarTagFilePrepareObj(self.parameter_obj)
+
+    def run(self):
+        super()._run()

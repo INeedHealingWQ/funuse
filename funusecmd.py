@@ -18,6 +18,7 @@ class CmdParseObj:
         The following switches are optional:
         -m, --module    Count only a single module, then the -d option should followed by module path.
         -s, --simple    Brief output, only the top-level directories.
+        -q, --quick     Quick mode, not write data to disk, this will use more memory.
         -v, --variable  Count the global variables which are not used.
         -f, --function  Count the function definition which are not used.
         -h, --help      Show help
@@ -59,6 +60,8 @@ class CmdParseObj:
             elif o in ['-h', '--help']:
                 self.usage()
                 sys.exit(0)
+            elif o in ['-q', '--quick']:
+                self.__parameter_obj.quick_mode = True
             else:
                 assert False, 'unrecognized option\n'
 

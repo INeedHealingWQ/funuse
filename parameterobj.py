@@ -12,6 +12,8 @@ class ParameterObj:
         self.count_function = True
         self.count_module = False
 
+        self.quick_mode = False
+
     def update(self):
         if None in [self.objdump_tool, self.ctags_tool, self.executable, self.directory]:
             return False

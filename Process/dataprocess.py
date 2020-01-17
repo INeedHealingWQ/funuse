@@ -34,11 +34,16 @@ class DataProcessObj(pro.ProcessObj):
         assert [self.data_down_flag, self.text_down_flag] == [True, True]
 
     @staticmethod
-    def __start_strip(strip_file, strip_dict):
+    def __start_strip(strip_src, strip_dict):
         elem_id = ()
         elem = []
-        with open(strip_file) as f:
-            lines = f.readlines()
+        if type(strip_src) is list:
+            lines = strip_src
+        elif type(strip_src) is str:
+            with open(strip_src) as f:
+                lines = f.readlines()
+        else:
+            assert False, 'unknow type'
 
         for single_line in lines:
             if single_line.isspace():
@@ -58,7 +63,11 @@ class DataProcessObj(pro.ProcessObj):
             elem.append(int(content[1], base=16))
 
     def run(self):
-        self.__start_strip(self.data_section_file, self.data_dict)
+        if self.data_mem_lines is not []:
+            data_section, text_section = self.data_mem_lines, self.text_mem_lines
+        else:
+            data_section, text_section = self.data_section_file, self.text_section_file
+        self.__start_strip(data_section, self.data_dict)
         self.data_down_flag = True
-        self.__start_strip(self.text_section_file, self.text_dict)
+        self.__start_strip(text_section, self.text_dict)
         self.text_down_flag = True

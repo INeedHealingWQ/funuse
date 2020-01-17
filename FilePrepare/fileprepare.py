@@ -29,4 +29,4 @@ class FilePrepareObj:
         var_sub_process = subprocess.Popen(
             self.tool_args, stdout=subprocess.PIPE
         )
-        self._prepare(self.prepare_file_name, var_sub_process)
+        return self._prepare(self.prepare_file_name, var_sub_process)

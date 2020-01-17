@@ -26,10 +26,16 @@ class FilterObj:
         self.hit_mark = '0'
         self.assert_msg_dict_need_init = 'dictionary needs initialization first'
 
-    def __init_tag_dict(self):
-        assert self.ctags_tmp_file is not None
-        with open(self.ctags_tmp_file, 'r') as f:
-            ctags_lines = f.readlines()
+    def __init_tag_dict(self, ctags_src):
+        if type(ctags_src) is list:
+            ctags_lines = ctags_src
+        elif type(ctags_src) is str:
+            assert self.ctags_tmp_file is not None
+            with open(self.ctags_tmp_file, 'r') as f:
+                ctags_lines = f.readlines()
+        else:
+            assert False, 'Unknown type'
+
         for single_line in ctags_lines:
             ctags_list = single_line.split()
             name = ctags_list[0]
@@ -54,14 +60,19 @@ class FilterObj:
                         f.write('\t%s\n' % i)
                     f.write('\n\n')
 
-    def run(self):
+    def _run(self):
         assert None not in [self.process_obj, self.tag_file_prepare_obj]
-        self.data_section_file_prepare_obj.run()
-        self.text_section_file_prepare_obj.run()
-        self.tag_file_prepare_obj.run()
+        data_section_mem_lines = self.data_section_file_prepare_obj.run()
+        text_section_mem_lines = self.text_section_file_prepare_obj.run()
+        if [data_section_mem_lines, text_section_mem_lines] != [[], []]:
+            self.process_obj.set_mem_lines(data_section_mem_lines, text_section_mem_lines)
+        tag_mem_lines = self.tag_file_prepare_obj.run()
         self.process_obj.run()
         self.process_obj.rough_count()
-        self.__init_tag_dict()
+        if tag_mem_lines is not []:
+            self.__init_tag_dict(tag_mem_lines)
+        else:
+            self.__init_tag_dict(self.ctags_tmp_file)
         unused = self.process_obj.unused
         for e in unused:
             g = self.tag_dict.get(unused[e][0])

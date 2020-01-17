@@ -9,6 +9,7 @@ class SectionFilePrepareObj(fileprepare.FilePrepareObj):
         self.tool = parameter_obj.objdump_tool
 
     def _prepare(self, file, sub_process):
+        section_lines = []
         with open(file, 'w') as f:
             while True:
                 single_line = sub_process.stdout.readline().decode('ascii')
@@ -16,7 +17,11 @@ class SectionFilePrepareObj(fileprepare.FilePrepareObj):
                     break
                 if single_line.find(gvars.g_objdump_section_prompt_string) != -1:
                     continue
-                f.writelines(single_line)
+                if self.parameter_obj.quick_mode is True:
+                    section_lines.append(single_line)
+                else:
+                    f.writelines(single_line)
+        return section_lines
 
 class DataSectionFilePrepareObj(SectionFilePrepareObj):
     def __init__(self, parameter_obj):

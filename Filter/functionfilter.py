@@ -11,3 +11,6 @@ class FunctionFilter(filter.FilterObj):
         self.ctags_tmp_file = gvars.g_ctags_function_file_tmp
         self.process_obj = self.text_process_obj
         self.tag_file_prepare_obj = tag.FunTagFilePrepareObj(self.parameter_obj)
+
+    def run(self):
+        super()._run()
