@@ -1,7 +1,6 @@
 import gvars
 from FilePrepare import fileprepare
 from pathlib import Path
-import pdb
 
 
 class TagFilePrepareObj(fileprepare.FilePrepareObj):
@@ -14,7 +13,6 @@ class TagFilePrepareObj(fileprepare.FilePrepareObj):
 
     def _prepare(self, file, sub_process):
         with open(file, 'w') as f:
-            single_line = sub_process.stdout.readline().decode('ascii')
             while True:
                 single_line = sub_process.stdout.readline().decode('ascii')
                 if single_line is '' and sub_process.poll() is not None:

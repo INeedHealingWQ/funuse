@@ -3,7 +3,6 @@ import Process.textprocess as text
 import FilePrepare.sectionfileprepare as sec
 import parameterobj as para
 import copy
-import pdb
 
 
 class FilterObj:

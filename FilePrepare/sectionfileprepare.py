@@ -10,14 +10,13 @@ class SectionFilePrepareObj(fileprepare.FilePrepareObj):
 
     def _prepare(self, file, sub_process):
         with open(file, 'w') as f:
-            while sub_process.poll() is None:
+            while True:
                 single_line = sub_process.stdout.readline().decode('ascii')
-                res = single_line.find(gvars.g_objdump_section_prompt_string)
-                if res != -1:
+                if single_line is '' and sub_process.poll() is not None:
                     break
-            while sub_process.poll() is None:
-                f.writelines(sub_process.stdout.readline().decode('ascii'))
-
+                if single_line.find(gvars.g_objdump_section_prompt_string) != -1:
+                    continue
+                f.writelines(single_line)
 
 class DataSectionFilePrepareObj(SectionFilePrepareObj):
     def __init__(self, parameter_obj):
