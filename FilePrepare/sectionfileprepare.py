@@ -23,7 +23,7 @@ class DataSectionFilePrepareObj(SectionFilePrepareObj):
     def __init__(self, parameter_obj):
         super().__init__(parameter_obj)
 
-        self.tool_args = [self.tool, *gvars.g_objdump_data_section_args, self.executable]
+        self.tool_args = [self.tool, *gvars.g_objdump_data_section_args, str(self.executable)]
         self.prepare_file_name = gvars.g_objdump_data_section_file_tmp
 
 
@@ -31,5 +31,5 @@ class TextSectionFilePrepareObj(SectionFilePrepareObj):
     def __init__(self, parameter_obj):
         super().__init__(parameter_obj)
 
-        self.tool_args = [self.tool, *gvars.g_objdump_text_section_args, self.executable]
+        self.tool_args = [self.tool, *gvars.g_objdump_text_section_args, str(self.executable)]
         self.prepare_file_name = gvars.g_objdump_text_section_file_tmp

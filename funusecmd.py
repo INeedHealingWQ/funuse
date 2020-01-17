@@ -1,8 +1,8 @@
-import sys
+import sys, os
+from pathlib import Path
 import getopt
 from gvars import *
 from parameterobj import *
-
 
 class CmdParseObj:
     def __init__(self, argv):
@@ -20,9 +20,11 @@ class CmdParseObj:
         -s, --simple    Brief output, only the top-level directories.
         -v, --variable  Count the global variables which are not used.
         -f, --function  Count the function definition which are not used.
-        -j, --jump      Use common ctags format for easy jumping
         -h, --help      Show help
         '''
+
+    def elf_check(self):
+        pass
 
     def start_parse(self):
         options_args, left_arguments = self.parse_opt(self.__argv)
@@ -30,9 +32,20 @@ class CmdParseObj:
             if o in ['-t', '--dumptool']:
                 self.__parameter_obj.objdump_tool = a
             elif o in ['-x', ['-executable']]:
-                self.__parameter_obj.executable = a
+                exe = Path(a)
+                if exe.is_file() is False:
+                    print('%s should be an ELF-executable')
+                    self.usage()
+                    sys.exit()
+                self.__parameter_obj.executable = exe
             elif o in ['-d', ['--directory']]:
-                self.__parameter_obj.directory = a
+                p = Path(a)
+                if p.is_dir() is False:
+                    print('%s is not a directory.' % a)
+                    self.usage()
+                    sys.exit(0)
+                # Transfer to absolute directory for further processing.
+                self.__parameter_obj.directory = p
             elif o in ['-s', ['--simple']]:
                 self.__parameter_obj.output_simple = True
             elif o in ['-v', '--variable']:

@@ -14,8 +14,8 @@ g_necessary_opts = [['-t', '--dumptool'], ['-x', '--executable'], ['-d', '--dire
 
 # ctags arguments
 g_ctags_tool = 'ctags'
-g_ctags_function_args = ['--languages=c', '--c-kinds=+f-vdceglmnpstu', '-f -', '-R']
-g_ctags_variable_args = ['--languages=c', '--c-kinds=+v-fdceglmnpstu', '-f -', '-R']
+g_ctags_function_args = ['--languages=c', '--c-kinds=+f-vdceglmnpstu', '--fields=+k-afiKlmnsSzt', '-f -', '-R']
+g_ctags_variable_args = ['--languages=c', '--c-kinds=+v-fdceglmnpstu', '--fields=+k-afiKlmnsSzt', '-f -', '-R']
 g_ctags_all_args = ['--languages=c', '--c-kinds=+vf-dceglmnpstu', '-f -', '-R']
 g_ctags_variable_file_tmp = '/tmp/tagfile_variable'
 g_ctags_function_file_tmp = '/tmp/tagfile_function'

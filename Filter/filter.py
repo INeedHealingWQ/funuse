@@ -3,6 +3,7 @@ import Process.textprocess as text
 import FilePrepare.sectionfileprepare as sec
 import parameterobj as para
 import copy
+import pdb
 
 
 class FilterObj:
@@ -23,6 +24,7 @@ class FilterObj:
         self.module_dict = {}
         # {'file_path' : 'name'}
         self.file_dict = {}
+        self.hit_mark = '0'
         self.assert_msg_dict_need_init = 'dictionary needs initialization first'
 
     def __init_tag_dict(self):
@@ -31,13 +33,14 @@ class FilterObj:
             ctags_lines = f.readlines()
         for single_line in ctags_lines:
             ctags_list = single_line.split()
+            name = ctags_list[0]
             model_name = ctags_list[1]
             file_path = ctags_list[2]
-            self.tag_dict[ctags_list[0]] = [model_name, file_path]
+            self.tag_dict[name] = [model_name, file_path]
 
     def __to_file(self):
         with open(self.out_file, 'w') as f:
-            if self.parameter_obj.output_all is True:
+            if self.parameter_obj.output_simple is False:
                 for m in self.file_dict:
                     f.write('%s:\n' % m)
                     for p in self.file_dict[m]:
@@ -60,19 +63,19 @@ class FilterObj:
         self.process_obj.run()
         self.process_obj.rough_count()
         self.__init_tag_dict()
-        unused = self.data_process_obj.unused
+        unused = self.process_obj.unused
         for e in unused:
             g = self.tag_dict.get(unused[e][0])
             if g is not None:
                 # mark the function which hit in the directories
-                self.tag_dict[unused[e][0]].append('xxxhit')
+                self.tag_dict[unused[e][0]].append(self.hit_mark)
         self.__final_trip()
         self.__to_file()
 
     # filter functions to the directory it belongs to
     def __final_trip(self):
         for e in self.tag_dict:
-            if self.tag_dict[e][-1] == 'xxxhit':
+            if self.tag_dict[e][-1] == self.hit_mark:
                 if self.parameter_obj.output_simple is True:
                     model_name = self.tag_dict[e][0]
                     g = self.module_dict.get(model_name)
@@ -81,11 +84,11 @@ class FilterObj:
                         self.module_dict[model_name] = [e]
                     else:
                         self.module_dict[model_name].append(e)
-                elif self.parameter_obj.output_all is True:
+                else:
                     # get the file path which the variable belongs to in the module
                     model_name = self.tag_dict[e][0]
                     file_name = self.tag_dict[e][1]
-                    m = self.module_dict.get(model_name)
+                    m = self.file_dict.get(model_name)
                     if m is None:
                         # Got the first file in the module
                         self.file_dict[model_name] = {file_name: [e]}

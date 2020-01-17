@@ -12,9 +12,8 @@
     Then the file 'unused_functions' or 'unused_variables' would arised in your work directory.
     Note that '../future' is the project path which you want to count.
     Ex:
-        funuse.py -x ./ISS.exe -d ../future/vlangarp
+        funuse.py -x ./ISS.exe -d ../future/vlangarp -m
     Will only dump the unused variables and functions in vlangarp module
-    But i do not advise this because it spent the same time as ../future
 
     **NOTE**: Do not use funuse multi-times at the same time because of the shared file.
 
@@ -28,7 +27,8 @@
     funuse.py -x ./ISS.exe -s -d ../future
 
 This tool use '/opt/toolchain/iProcLDK_3.4.6/usr/bin/arm-linux-objdump'
-by default, you can use -t to re-assign it
+by default, you can use -t to re-assign it:
+    funuse.py -x ./ISS.exe -s -d ../future -t arm-linux-objdump
 
 # Show help:
     funuse.py -h
