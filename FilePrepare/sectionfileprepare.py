@@ -10,20 +10,26 @@ class SectionFilePrepareObj(fileprepare.FilePrepareObj):
 
     def _prepare(self, file, sub_process):
         section_lines = []
-        with open(file, 'w') as f:
-            while True:
-                single_line = sub_process.stdout.readline().decode('ascii')
-                if single_line is '' and sub_process.poll() is not None:
-                    break
-                prompt_string = single_line.find(gvars.g_objdump_section_prompt_string)
-                exe_string = single_line.find(self.executable.name)
-                if [prompt_string, exe_string] != [-1, -1]:
-                    continue
-                if self.parameter_obj.quick_mode is True:
-                    section_lines.append(single_line)
-                else:
-                    f.writelines(single_line)
+        if self.parameter_obj.quick_mode is False:
+            try:
+                f = open(file, 'w')
+            finally:
+                if f:
+                    f.close()
+        while True:
+            single_line = sub_process.stdout.readline().decode('ascii')
+            if single_line is '' and sub_process.poll() is not None:
+                break
+            prompt_string = single_line.find(gvars.g_objdump_section_prompt_string)
+            exe_string = single_line.find(self.executable.name)
+            if [prompt_string, exe_string] != [-1, -1]:
+                continue
+            if self.parameter_obj.quick_mode is True:
+                section_lines.append(single_line)
+            else:
+                f.writelines(single_line)
         return section_lines
+
 
 class DataSectionFilePrepareObj(SectionFilePrepareObj):
     def __init__(self, parameter_obj):
