@@ -3,6 +3,7 @@ import gvars
 import FilePrepare.tagfileprepare as tag
 import Process.textprocess as text
 import TagProcess.tagprocess as tp
+from Cache.cache import FunFilterCache
 
 
 class FunctionFilterObj(filter.FilterObj):
@@ -15,5 +16,9 @@ class FunctionFilterObj(filter.FilterObj):
         self.tag_file_prepare_obj = tag.FunTagFilePrepareObj(parameter_obj)
         self.tag_process_obj = tp.FunTagProcess(parameter_obj)
 
-    def run(self):
-        super()._run()
+    def run(self, *cache: FunFilterCache):
+        if cache.__len__() != 0:
+            for e in cache:
+                super()._run(e)
+        else:
+            super(FunctionFilterObj, self)._run()

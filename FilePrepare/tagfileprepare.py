@@ -13,12 +13,14 @@ class TagFilePrepareObj(fileprepare.FilePrepareObj):
 
     def _prepare(self, file, sub_process):
         tag_lines = []
+        f = None
         if self.parameter_obj.quick_mode is False:
             try:
                 f = open(file, 'w')
-            finally:
-                if f:
-                    f.close()
+            except OSError:
+                print('Open file error')
+                exit(1)
+
         while True:
             single_line = sub_process.stdout.readline().decode('ascii')
             if single_line is '' and sub_process.poll() is not None:
@@ -51,6 +53,7 @@ class TagFilePrepareObj(fileprepare.FilePrepareObj):
                 tag_lines.append(write_line)
             else:
                 f.writelines(write_line)
+        f.close()
         return tag_lines
 
 

@@ -10,12 +10,14 @@ class SectionFilePrepareObj(fileprepare.FilePrepareObj):
 
     def _prepare(self, file, sub_process):
         section_lines = []
+        f = None
         if self.parameter_obj.quick_mode is False:
             try:
                 f = open(file, 'w')
-            finally:
-                if f:
-                    f.close()
+            except OSError:
+                print('Open file failed')
+                exit(1)
+
         while True:
             single_line = sub_process.stdout.readline().decode('ascii')
             if single_line is '' and sub_process.poll() is not None:
@@ -28,6 +30,7 @@ class SectionFilePrepareObj(fileprepare.FilePrepareObj):
                 section_lines.append(single_line)
             else:
                 f.writelines(single_line)
+        f.close()
         return section_lines
 
 
