@@ -63,7 +63,7 @@ class DataProcessObj(pro.ProcessObj):
             elem.append(int(content[1], base=16))
 
     def run(self):
-        if self.data_mem_lines is not []:
+        if self.data_mem_lines:
             data_section, text_section = self.data_mem_lines, self.text_mem_lines
         else:
             data_section, text_section = self.data_section_file, self.text_section_file

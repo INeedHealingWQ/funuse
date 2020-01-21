@@ -1,8 +1,11 @@
-import sys, os
+import sys
+import os
 from pathlib import Path
 import getopt
 from gvars import *
 from parameterobj import *
+import copy
+
 
 class CmdParseObj:
     def __init__(self, argv):
@@ -33,7 +36,7 @@ class CmdParseObj:
             if o in ['-t', '--dumptool']:
                 self.__parameter_obj.objdump_tool = a
             elif o in ['-x', ['-executable']]:
-                exe_str = os.path.expanduser(a)
+                exe_str = os.path.abspath(os.path.expanduser(a))
                 exe = Path(exe_str)
                 if exe.is_file() is False or exe.suffix != '.exe':
                     print('%s should be an ELF-executable')
@@ -41,7 +44,7 @@ class CmdParseObj:
                     sys.exit()
                 self.__parameter_obj.executable = exe
             elif o in ['-d', ['--directory']]:
-                path_str = os.path.expanduser(a)
+                path_str = os.path.abspath(os.path.expanduser(a))
                 path = Path(path_str)
                 if path.is_dir() is False:
                     print('%s is not a directory.' % a)
@@ -71,7 +74,7 @@ class CmdParseObj:
             self.usage()
             sys.exit()
 
-        return self.__parameter_obj
+        return copy.deepcopy(self.__parameter_obj)
 
     def usage(self):
         print(self.help_message)

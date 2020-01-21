@@ -45,7 +45,7 @@ class TextProcessObj(pro.ProcessObj):
     def __strip_data(self):
         elem_id = ()
         elem = []
-        if self.data_mem_lines != []:
+        if self.data_mem_lines:
             lines = self.data_mem_lines
         else:
             with open(self.data_section_file, 'r') as f:
@@ -74,7 +74,7 @@ class TextProcessObj(pro.ProcessObj):
     def __strip_text(self):
         elem_id = ()
         elem = []
-        if self.text_mem_lines != []:
+        if self.text_mem_lines:
             lines = self.text_mem_lines
         else:
             with open(self.text_section_file, 'r') as f:

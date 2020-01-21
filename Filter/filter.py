@@ -4,14 +4,11 @@ import copy
 from Cache import cache
 from os import path
 import shutil
-import gvars
-import datetime
 
 
 class FilterObj:
-    def __init__(self, parameter_obj):
-        assert type(parameter_obj) is para.ParameterObj, 'parameter error'
-        self.parameter_obj = copy.deepcopy(parameter_obj)
+    def __init__(self, parameter_obj: para.ParameterObj):
+        self.parameter_obj = parameter_obj
         self.data_section_file_prepare_obj = sec.DataSectionFilePrepareObj(self.parameter_obj)
         self.text_section_file_prepare_obj = sec.TextSectionFilePrepareObj(self.parameter_obj)
         self.tag_file_prepare_obj = None
@@ -37,7 +34,7 @@ class FilterObj:
 
     @filter_cache.deleter
     def filter_cache(self):
-        self.__filter_cache = None
+        self._filter_cache = None
 
     def __to_file(self):
         with open(self.out_file, 'w') as f:
@@ -55,16 +52,6 @@ class FilterObj:
                     for i in self.module_dict[e]:
                         f.write('\t%s\n' % i)
                     f.write('\n\n')
-        if self._filter_cache is None:
-            pass
-#            cache_file = gvars.g_cache_fun_filtered_prefix + str(datetime.datetime.today().timestamp())
-#            cache_file_path = path.abspath(path.expanduser(cache_file))
-#            shutil.copyfile(self.out_file, cache_file_path)
-#            cache_index_file_path = path.abspath(path.expanduser(gvars.g_cache_index_file))
-#            with open(cache_index_file_path, 'w+') as f:
-#                line = 'fun_filter ' + str(self.parameter_obj.executable) + ' ' + str(self.parameter_obj.directory) \
-#                + ' None' + ' None' + ' None ' + cache_file
-#                f.writelines(line)
 
     def _run(self):
         assert None not in [self.process_obj, self.tag_file_prepare_obj]
@@ -79,7 +66,7 @@ class FilterObj:
         tag_mem_lines = self.tag_file_prepare_obj.run()
         self.process_obj.run()
         self.process_obj.rough_count()
-        if tag_mem_lines != []:
+        if tag_mem_lines:
             self.tag_process_obj.set_mem_lines(tag_mem_lines)
         unused = self.process_obj.unused
         self.tag_process_obj.run()

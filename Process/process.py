@@ -32,4 +32,3 @@ class ProcessObj:
     # support quick mode
     def set_mem_lines(self, data_lines, text_lines):
         self.data_mem_lines, self.text_mem_lines = data_lines, text_lines
-

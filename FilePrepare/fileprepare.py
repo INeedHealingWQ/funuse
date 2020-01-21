@@ -1,15 +1,13 @@
 import subprocess
 import parameterobj as para
-import copy
 from abc import ABCMeta, abstractmethod
 
 
 # Prepare some temporary files for coming processing
 class FilePrepareObj:
-    def __init__(self, parameter_obj):
+    def __init__(self, parameter_obj: para.ParameterObj):
         __metaclass__ = ABCMeta
-        assert type(parameter_obj) is para.ParameterObj, 'parameter error'
-        self.parameter_obj = copy.deepcopy(parameter_obj)
+        self.parameter_obj = parameter_obj
 
         self.tool = None
         self.tool_args = None

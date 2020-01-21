@@ -30,7 +30,6 @@ class TagProcess:
             self.tag_dict[name] = [model_name, file_path]
 
     def _run(self):
-        tag_src = None
         if self.mem_lines:
             tag_src = self.mem_lines
         else:

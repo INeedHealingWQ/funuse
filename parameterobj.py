@@ -1,7 +1,7 @@
 
 
 class ParameterObj:
-    def __init__(self, *, executable = None, directory = None):
+    def __init__(self, *, executable=None, directory=None):
         self.objdump_tool = '/opt/toolchain/iProcLDK_3.4.6/usr/bin/arm-linux-objdump'
         self.ctags_tool = 'ctags'
         self.executable = executable

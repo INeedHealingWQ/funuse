@@ -25,6 +25,5 @@ g_variable_out_file = 'unused_variables'
 g_function_out_file = 'unused_functions'
 
 # cache directory
-g_cache_dir = '~/.funuse'
-g_cache_index_file = g_cache_dir + '/cache_index'
-g_cache_fun_filtered_prefix = g_cache_dir + '/fun_filtered_'
+g_cache_dir = '~/.funuse/'
+g_cache_index_file = g_cache_dir + 'cache_index'
