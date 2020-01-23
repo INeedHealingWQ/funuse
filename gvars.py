@@ -27,3 +27,9 @@ g_function_out_file = 'unused_functions'
 # cache directory
 g_cache_dir = '~/.funuse/'
 g_cache_index_file = g_cache_dir + 'cache_index'
+
+# for funuse daemon module
+g_daemon_dir = '~/.funuse_daemon/'
+g_daemon_state_file = g_daemon_dir + 'state'
+g_daemon_pid_file = g_daemon_dir + 'pid'
+g_daemon_log_file = g_daemon_dir + 'log'

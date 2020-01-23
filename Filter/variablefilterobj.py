@@ -9,6 +9,7 @@ from os import path
 from pathlib import Path
 import shutil
 import datetime
+import fcntl
 
 
 class VariableFilterObj(filter.FilterObj):
@@ -26,16 +27,19 @@ class VariableFilterObj(filter.FilterObj):
         cache_index_path = Path(cache_index)
         if cache_index_path.exists():
             with open(cache_index, 'r') as f:
+                fcntl.flock(f, fcntl.LOCK_SH)
                 lines = f.readlines()
+                fcntl.flock(f, fcntl.LOCK_UN)
                 for single_line in lines:
                     elem_list = single_line.split()
                     if elem_list[0] == VarFilterCache.filter_index_type:
-                        var_filter_cache_elem = cacheelem.VarFilterCacheElem(executable=elem_list[1], exe_timestamp=elem_list[2],
-                                                                             directory=elem_list[3], dir_timestamp=elem_list[4],
-                                                                             path_data_unused=elem_list[5],
-                                                                             path_text_unused=elem_list[6],
-                                                                             path_var_tag_dict=elem_list[7],
-                                                                             path_var_filter=elem_list[8])
+                        var_filter_cache_elem = cacheelem.VarFilterCacheElem(
+                            executable=elem_list[1], exe_timestamp=elem_list[2],
+                            directory=elem_list[3], dir_timestamp=elem_list[4],
+                            path_data_unused=elem_list[5],
+                            path_text_unused=elem_list[6],
+                            path_var_tag_dict=elem_list[7],
+                            path_var_filter=elem_list[8])
                         var_filter_cache = VarFilterCache(var_filter_cache_elem)
                         if var_filter_cache.match_by_para(self.parameter_obj) is True:
                             self._filter_cache = var_filter_cache
@@ -51,7 +55,10 @@ class VariableFilterObj(filter.FilterObj):
             with open(cache_index_file_path, 'a') as f:
                 cache_files = ['None', 'None', 'None', var_filter_cache_file_path]
                 line = cacheelem.VarFilterCacheElem.construct_index_line(self.parameter_obj, *cache_files)
+                fcntl.flock(f, fcntl.LOCK_EX)
                 f.writelines(line)
+                f.flush()
+                fcntl.flock(f, fcntl.LOCK_UN)
 
     def run(self):
         self.__read_cache()

@@ -3,6 +3,7 @@ import parameterobj as para
 import copy
 from Cache import cache
 from os import path
+from pathlib import Path
 import shutil
 
 
@@ -57,8 +58,10 @@ class FilterObj:
         assert None not in [self.process_obj, self.tag_file_prepare_obj]
         if self._filter_cache is not None:
             p_str = path.abspath(path.expanduser(self._filter_cache.filter_path))
-            shutil.copyfile(p_str, self.out_file)
-            return
+            pt = Path(p_str)
+            if pt.exists() is True:
+                shutil.copyfile(p_str, self.out_file)
+                return
         data_section_mem_lines = self.data_section_file_prepare_obj.run()
         text_section_mem_lines = self.text_section_file_prepare_obj.run()
         if [data_section_mem_lines, text_section_mem_lines] != [[], []]:

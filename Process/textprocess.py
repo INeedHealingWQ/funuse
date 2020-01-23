@@ -83,12 +83,14 @@ class TextProcessObj(pro.ProcessObj):
         pre_elem_movw = None
 
         for single_line in lines:
-            if single_line.isspace():
+            if single_line == '' or single_line.isspace():
                 if elem:
                     local_dict[elem_id] = elem
                     elem = []
                 continue
             elif not re.findall(r'[0-9a-zA-Z]+', single_line):
+                continue
+            elif len(single_line) <= 3:
                 continue
             first_word = re.findall(r'^[0-9a-zA-Z]+', single_line)
             second_word = re.findall(r'<[_a-zA-Z0-9.]+>', single_line)
@@ -97,7 +99,8 @@ class TextProcessObj(pro.ProcessObj):
                 elem.append(second_word[0].strip('<>'))
                 continue
             content = single_line.split()
-            if content[2] == 'bl' and [] == re.findall(r'_[a-zA-Z_]+\+', content[4]):
+            if content[2] == 'bl' and content.__len__() >= 5 and\
+                    [] == re.findall(r'_[a-zA-Z_]+\+', content[4]):
                 call_func_addr = content[3]
                 call_func_name = content[4].strip('<>')
                 elem.append([int(call_func_addr, base=16), call_func_name])
