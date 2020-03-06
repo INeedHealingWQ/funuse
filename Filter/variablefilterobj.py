@@ -40,6 +40,8 @@ class VariableFilterObj(filter.FilterObj):
                             path_text_unused=elem_list[6],
                             path_var_tag_dict=elem_list[7],
                             path_var_filter=elem_list[8])
+                        if var_filter_cache_elem.exist_check() is False:
+                            continue
                         var_filter_cache = VarFilterCache(var_filter_cache_elem)
                         if var_filter_cache.match_by_para(self.parameter_obj) is True:
                             self._filter_cache = var_filter_cache

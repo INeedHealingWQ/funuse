@@ -40,6 +40,9 @@ class CacheElem:
     def path(self):
         return self._path
 
+    def exist_check(self):
+        return pt.exists(self.executable) and pt.exists(self.directory)
+
 
 class DataUnusedCacheElem(CacheElem):
     def __init__(self, *, executable, exe_timestamp, directory, dir_timestamp, path_data_unused):

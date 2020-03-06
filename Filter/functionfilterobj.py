@@ -41,6 +41,8 @@ class FunctionFilterObj(filter.FilterObj):
                             path_fun_tag_dict=elem_list[7],
                             path_var_filter=elem_list[8]
                         )
+                        if fun_filter_cache_elem.exist_check() is False:
+                            continue
                         fun_filter_cache = FunFilterCache(fun_filter_cache_elem)
                         if fun_filter_cache.match_by_para(self.parameter_obj) is True:
                             self._filter_cache = fun_filter_cache
